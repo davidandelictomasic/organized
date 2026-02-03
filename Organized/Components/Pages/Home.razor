@@ -1,7 +1,51 @@
 ﻿@page "/"
+@using Organized.Application.Users.User
+@inject CreateUserRequestHandler CreateUserHandler
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+<!-- Simple two-way binding -->
+<!--  <input @bind="username" placeholder="Enter username" />
+<p>You entered: @username</p>
+  -->
+<!-- Using Blazor's EditForm with input components -->
+<EditForm class="user-form" Model="userModel" OnValidSubmit="HandleSubmit" FormName="userForm">
+    <div class="form-group">
+        <label for="FirstName">Name:</label>
+        <InputText @bind-Value="@userModel.Name" id="FirstName" class="form-input" />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email:</label>
+        <InputText @bind-Value="userModel.Email" id="Email" class="form-input" />
+    </div>
+    <button type="submit" class="btn-submit">Submit</button>
+</EditForm>
 
-Welcome to your new app.
+@code {
+
+    public class UserModel
+    {
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+    }
+
+
+    [SupplyParameterFromForm]
+    public UserModel? userModel { get; set; } = new();
+
+
+    private async Task HandleSubmit(EditContext context)
+    {
+        var request = new CreateUserRequest
+        {
+            Name = userModel.Name,
+            Email = userModel.Email
+		};
+        var result = await CreateUserHandler.ProcessActiveRequestAsnync(request);
+        //var message = result.IsSuccess ? "User created successfully!" : "Failed to create user.";
+    
+    }
+
+    
+}

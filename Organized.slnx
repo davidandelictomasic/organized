@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="Organized.Application/Organized.Application.csproj" />
+  <Project Path="Organized.Domain/Organized.Domain.csproj" />
+  <Project Path="Organized.Infrastructure/Organized.Infrastructure.csproj" />
   <Project Path="Organized/Organized.csproj" />
 </Solution>
