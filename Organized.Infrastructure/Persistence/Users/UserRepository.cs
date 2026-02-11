@@ -17,9 +17,14 @@ namespace Organized.Infrastructure.Persistence.Users
         }
 
         public async Task<User?> GetById(int id)
-        {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+                {
+                    return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
 
+                }
+
+                public async Task<User?> GetByEmail(string email)
+                {
+                    return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+                }
+            }
         }
-    }
-}

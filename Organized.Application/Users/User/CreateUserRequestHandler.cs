@@ -19,7 +19,8 @@ namespace Organized.Application.Users.User
         public string Name { get; set; }
         
         public string Email { get; set; }
-       
+
+        public string Password { get; set; }
 
     }
     public class CreateUserRequestHandler : RequestHandler<CreateUserRequest, SuccessPostResponse>
@@ -34,8 +35,8 @@ namespace Organized.Application.Users.User
             var user = new Domain.Entities.Users.User
             {
                 Name = request.Name,                
-                Email = request.Email
-                
+                Email = request.Email,
+                Password = request.Password
 
 
             };

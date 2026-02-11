@@ -9,6 +9,6 @@ namespace Organized.Domain.Persistence.Users
     public interface IUserRepository : IRepository<User, int>
     {
         Task<User?> GetById(int id);
-        
+        Task<User?> GetByEmail(string email);
     }
 }

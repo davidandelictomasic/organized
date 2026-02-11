@@ -114,3 +114,24 @@ h1:focus {
 .btn-submit:active {
     background-color: #104578;
 }
+
+
+.success-message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    color: #155724;
+    max-width: 400px;
+}
+
+.error-message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    color: #721c24;
+    max-width: 400px;
+}

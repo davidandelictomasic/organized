@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<CreateUserRequestHandler>();
+builder.Services.AddScoped<GetUserByEmailRequestHandler>();
 
 var app = builder.Build();
 
