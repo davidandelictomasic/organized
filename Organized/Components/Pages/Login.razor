@@ -1,0 +1,69 @@
+@page "/"
+@layout AuthLayout
+@using Organized.Application.Users.User
+@inject GetUserByEmailRequestHandler LoginHandler
+@inject NavigationManager Navigation
+
+<div class="auth-header">
+    <h1>Welcome Back</h1>
+    <p>Sign in to continue</p>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="error-message">
+        @errorMessage
+    </div>
+}
+
+<EditForm class="auth-form" Model="loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+    <div class="form-group">
+        <label for="LoginEmail">Email</label>
+        <InputText @bind-Value="loginModel.Email" id="LoginEmail" class="form-input" placeholder="Enter your email" />
+    </div>
+    <div class="form-group">
+        <label for="LoginPassword">Password</label>
+        <InputText @bind-Value="loginModel.Password" id="LoginPassword" class="form-input" type="password" placeholder="Enter your password" />
+    </div>
+    <button type="submit" class="btn-auth">Sign In</button>
+</EditForm>
+
+<div class="auth-footer">
+    <p>Don't have an account? <a href="/register">Create account</a></p>
+</div>
+
+@code {
+    public class LoginModel
+    {
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+    }
+
+    [SupplyParameterFromForm]
+    public LoginModel? loginModel { get; set; } = new();
+
+    private string? errorMessage;
+
+    private async Task HandleLogin(EditContext context)
+    {
+        var request = new GetUserByEmailRequest
+        {
+            Email = loginModel.Email ?? string.Empty,
+            Password = loginModel.Password ?? string.Empty
+        };
+        var result = await LoginHandler.ProcessActiveRequestAsnync(request);
+
+        if (result.Value?.Found == true && result.Value.PasswordMatch)
+        {
+            Navigation.NavigateTo("/home");
+        }
+        else if (result.Value?.Found == true && !result.Value.PasswordMatch)
+        {
+            errorMessage = "Invalid password.";
+        }
+        else
+        {
+            errorMessage = "User not found.";
+        }
+    }
+}
