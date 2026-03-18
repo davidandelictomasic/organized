@@ -1,7 +1,9 @@
-@page "/"
+@page "/login"
 @layout AuthLayout
 @using Organized.Application.Users.User
+@using Organized.Services
 @inject GetUserByEmailRequestHandler LoginHandler
+@inject UserStateService UserState
 @inject NavigationManager Navigation
 
 <div class="auth-header">
@@ -55,7 +57,8 @@
 
         if (result.Value?.Found == true && result.Value.PasswordMatch)
         {
-            Navigation.NavigateTo("/home");
+            UserState.SetUser(result.Value.Id, result.Value.Email, result.Value.Name);
+            Navigation.NavigateTo("/reservations");
         }
         else if (result.Value?.Found == true && !result.Value.PasswordMatch)
         {

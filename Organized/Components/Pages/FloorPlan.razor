@@ -1,0 +1,430 @@
+@page "/floorplan"
+@layout HomeLayout
+@using Organized.Application.Reservations
+@using Organized.Application.Tables
+@using Organized.Services
+@inject CreateReservationRequestHandler CreateReservationHandler
+@inject GetAllTablesRequestHandler GetTablesHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<PageTitle>Floor Plan - Organized</PageTitle>
+
+<div class="floorplan-container">
+    <h1 class="floorplan-title">Select a Table</h1>
+    <p class="floorplan-subtitle">Click on a table marker to make a reservation</p>
+
+    @if (!UserState.IsLoggedIn)
+    {
+        <div class="login-prompt">
+            <p>Please <a href="/login">log in</a> to make a reservation.</p>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="@(isSuccess ? "message-success" : "message-error")">
+                @message
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(debugMessage))
+        {
+            <div style="background: #fffbcc; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                Debug: @debugMessage
+            </div>
+        }
+
+        <div class="floorplan-wrapper">
+            <div id="floorplan-map"></div>
+        </div>
+
+        <!-- Reservation modal/popup -->
+        @if (showDatePicker && selectedTableId > 0)
+        {
+            <div class="modal-overlay" @onclick="CloseModal">
+                <div class="modal-content" @onclick:stopPropagation>
+                    <button class="modal-close" @onclick="CloseModal">&times;</button>
+                    
+                    <h2 class="modal-title">Reserve Table @selectedTableId</h2>
+                    
+                    @if (selectedTable != null)
+                    {
+                        <p class="modal-subtitle">@selectedTable.CompanyName - @selectedTable.City</p>
+                    }
+
+                    <div class="form-group">
+                        <label for="reservationDate">Select Date:</label>
+                        <input type="date" 
+                               id="reservationDate" 
+                               @bind="reservationDate" 
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               class="date-input" />
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
+                        <button class="btn-submit" @onclick="HandleSubmit" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span>Creating...</span>
+                            }
+                            else
+                            {
+                                <span>Create Reservation</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .floorplan-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .floorplan-title {
+        font-size: 2rem;
+        color: #1e3a5f;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .floorplan-subtitle {
+        color: #666;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-prompt {
+        text-align: center;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .message-success {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        color: #155724;
+        text-align: center;
+    }
+
+    .message-error {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        color: #721c24;
+        text-align: center;
+    }
+
+    .floorplan-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        line-height: 1;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        color: #1e3a5f;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-subtitle {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .date-input {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        transition: border-color 0.2s;
+    }
+
+    .date-input:focus {
+        outline: none;
+        border-color: #1e3a5f;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-cancel {
+        padding: 0.75rem 1.5rem;
+        background: #e0e0e0;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+    }
+
+    .btn-submit {
+        padding: 0.75rem 1.5rem;
+        background: #1e3a5f;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: #2c5282;
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+</style>
+
+@code {
+private List<CompanyTableResponse>? tables;
+private int selectedTableId = 0;
+private CompanyTableResponse? selectedTable;
+private DateTime reservationDate = DateTime.Today;
+private string? message;
+private bool isSuccess;
+private bool showDatePicker = false;
+private bool isSubmitting = false;
+private DotNetObjectReference<FloorPlan>? dotNetRef;
+private bool mapInitialized = false;
+private string? debugMessage;
+
+// Table positions on the floor plan - matching the React setup
+// Position format: [Y, X] coordinates on the 2500x3000 bounds image
+private List<TablePosition> tablePositions = new()
+{
+    new TablePosition { TableId = 100, X = 535.5, Y = 1308 },   // Desk 1
+    new TablePosition { TableId = 101, X = 640.5, Y = 1329 },   // Desk 2
+    new TablePosition { TableId = 102, X = 740.5, Y = 1319 },   // Desk 3
+    new TablePosition { TableId = 103, X = 542, Y = 1175 },     // Desk 4
+    new TablePosition { TableId = 104, X = 644.25, Y = 1150.5 }, // Desk 5
+    new TablePosition { TableId = 105, X = 798, Y = 1149 },     // Desk 6
+};
+
+protected override async Task OnInitializedAsync()
+{
+    if (!UserState.IsLoggedIn)
+    {
+        return;
+    }
+
+    var result = await GetTablesHandler.ProcessActiveRequestAsnync(new GetAllTablesRequest());
+    tables = result.Value;
+    debugMessage = $"Loaded {tables?.Count ?? 0} tables from database";
+}
+
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender && UserState.IsLoggedIn && !mapInitialized)
+    {
+        await InitializeMap();
+        StateHasChanged();
+    }
+}
+
+private async Task InitializeMap()
+{
+    try
+    {
+        // Wait for Leaflet to load
+        await Task.Delay(300);
+
+        dotNetRef = DotNetObjectReference.Create(this);
+
+        // Initialize the map - pass true to skip image for testing
+        // Change to false once markers are working
+        bool skipImage = true;
+        await JSRuntime.InvokeVoidAsync("FloorPlanInterop.initialize", 
+            "groundplan.jpg", dotNetRef, skipImage);
+
+        debugMessage = $"Map initialized (skipImage={skipImage}). Tables: {tables?.Count ?? 0}";
+
+        // Add markers for each table
+        int markersAdded = 0;
+        if (tables != null)
+        {
+            foreach (var pos in tablePositions)
+            {
+                var tableInfo = tables.FirstOrDefault(t => t.Id == pos.TableId);
+                if (tableInfo != null)
+                {
+                    await JSRuntime.InvokeVoidAsync("FloorPlanInterop.addMarker",
+                        pos.TableId, pos.X, pos.Y, $"Desk {pos.TableId - 99}", dotNetRef);
+                    markersAdded++;
+                }
+            }
+        }
+
+        debugMessage = $"Map initialized. Added {markersAdded} markers. Tables in DB: {tables?.Count ?? 0}";
+        mapInitialized = true;
+    }
+    catch (Exception ex)
+    {
+        debugMessage = $"Error: {ex.Message}";
+        Console.WriteLine($"Error initializing map: {ex.Message}");
+    }
+}
+
+    [JSInvokable]
+    public void OnMarkerClicked(int tableId)
+    {
+        selectedTableId = tableId;
+        selectedTable = tables?.FirstOrDefault(t => t.Id == tableId);
+        showDatePicker = true;
+        message = null;
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        showDatePicker = false;
+        selectedTableId = 0;
+        selectedTable = null;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (selectedTableId == 0)
+        {
+            message = "Please select a table.";
+            isSuccess = false;
+            return;
+        }
+
+        if (!UserState.UserId.HasValue)
+        {
+            message = "User not logged in.";
+            isSuccess = false;
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var request = new CreateReservationRequest
+            {
+                UserId = UserState.UserId.Value,
+                TableId = selectedTableId,
+                ReservationDate = DateTime.SpecifyKind(reservationDate, DateTimeKind.Utc)
+            };
+
+            var result = await CreateReservationHandler.ProcessActiveRequestAsnync(request);
+
+            if (result.Value?.Success == true)
+            {
+                message = $"Reservation created successfully for Table {selectedTableId}! Reservation ID: {result.Value.Id}";
+                isSuccess = true;
+                CloseModal();
+                reservationDate = DateTime.Today;
+            }
+            else
+            {
+                message = "Failed to create reservation.";
+                isSuccess = false;
+            }
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("FloorPlanInterop.dispose");
+        }
+        catch
+        {
+            // Ignore disposal errors
+        }
+        
+        dotNetRef?.Dispose();
+    }
+
+    private class TablePosition
+    {
+        public int TableId { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+}

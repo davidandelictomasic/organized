@@ -1,0 +1,85 @@
+@page "/my-reservations"
+@layout HomeLayout
+@using Organized.Application.Reservations
+@using Organized.Domain.Enums
+@using Organized.Services
+@inject GetUserReservationsRequestHandler GetReservationsHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<PageTitle>My Reservations - Organized</PageTitle>
+
+<div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+    <h1>My Reservations</h1>
+
+    @if (!UserState.IsLoggedIn)
+    {
+        <p>Please <a href="/login">log in</a> to view your reservations.</p>
+    }
+    else
+    {
+        <p>Logged in as: @UserState.UserEmail</p>
+
+        @if (isLoading)
+        {
+            <p>Loading reservations...</p>
+        }
+        else if (reservations == null || !reservations.Any())
+        {
+            <p>You have no reservations yet. <a href="/reservations">Make a reservation</a></p>
+        }
+        else
+        {
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background-color: #f0f0f0;">
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">ID</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Table</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">City</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Date</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in reservations)
+                    {
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.Id</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.TableName</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.City</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.ReservationDate.ToString("yyyy-MM-dd")</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <hr style="margin: 30px 0;" />
+
+        <p><a href="/reservations">Make another reservation</a></p>
+    }
+</div>
+
+@code {
+    private List<ReservationResponse>? reservations;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn || !UserState.UserId.HasValue)
+        {
+            isLoading = false;
+            return;
+        }
+
+        var request = new GetUserReservationsRequest
+        {
+            UserId = UserState.UserId.Value
+        };
+
+        var result = await GetReservationsHandler.ProcessActiveRequestAsnync(request);
+        reservations = result.Value;
+        isLoading = false;
+    }
+}

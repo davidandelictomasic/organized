@@ -1,4 +1,8 @@
-﻿using Organized.Domain.Persistence.Users;
+﻿using Organized.Domain.Persistence.Achievements;
+using Organized.Domain.Persistence.Friends;
+using Organized.Domain.Persistence.Reservations;
+using Organized.Domain.Persistence.Tables;
+using Organized.Domain.Persistence.Users;
 
 namespace Organized.Domain.Persistence.Common
 {
@@ -10,5 +14,15 @@ namespace Organized.Domain.Persistence.Common
         Task Rollback();
 
         IUserRepository UserRepository { get; }
+
+        ICompanyTableRepository CompanyTableRepository { get; }
+
+        IReservationRepository ReservationRepository { get; }
+
+        IAchievementRepository AchievementRepository { get; }
+        IUserAchievementRepository UserAchievementRepository { get; }
+
+        IFriendshipRepository FriendshipRepository { get; }
+        IFriendRequestRepository FriendRequestRepository { get; }
     }
 }

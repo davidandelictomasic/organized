@@ -22,13 +22,15 @@ namespace Organized.Infrastructure.Database.Configurations.Users
                    .HasColumnName("name");
 
             builder.Property(u => u.Email)
-                           .HasColumnName("email")
-                           .IsRequired();
+                   .HasColumnName("email")
+                   .IsRequired();
 
-                    builder.Property(u => u.Password)
-                           .HasColumnName("password")
-                           .IsRequired();
-            
-                }
-            }
+            builder.Property(u => u.Password)
+                   .HasColumnName("password")
+                   .IsRequired();
+
+            builder.Property(u => u.LastOnline)
+                   .HasColumnName("last_online");
+        }
+    }
 }

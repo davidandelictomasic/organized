@@ -24,7 +24,7 @@ namespace Organized.Infrastructure.Persistence.Users
 
                 public async Task<User?> GetByEmail(string email)
                 {
-                    return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+                        return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
                 }
             }
         }

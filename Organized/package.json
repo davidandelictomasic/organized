@@ -13,6 +13,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
+    "eslint": "^10.0.3",
     "tailwindcss": "^4.1.18"
   }
 }

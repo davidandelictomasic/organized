@@ -265,3 +265,13 @@ h1:focus {
     color: #666;
     font-size: 1.1rem;
 }
+
+/* Typewriter cursor animation */
+.typewriter-text {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { border-color: transparent; }
+    50% { border-color: white; }
+}
