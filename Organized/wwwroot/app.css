@@ -4,6 +4,11 @@ html, body {
 
 a, .btn-link {
     color: #006bb7;
+    text-decoration: none !important;
+}
+
+a:hover, .btn-link:hover {
+    text-decoration: none !important;
 }
 
 .btn-primary {

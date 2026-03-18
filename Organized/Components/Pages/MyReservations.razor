@@ -12,11 +12,7 @@
 <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
     <h1>My Reservations</h1>
 
-    @if (!UserState.IsLoggedIn)
-    {
-        <p>Please <a href="/login">log in</a> to view your reservations.</p>
-    }
-    else
+    @if (UserState.IsLoggedIn)
     {
         <p>Logged in as: @UserState.UserEmail</p>
 
@@ -69,7 +65,7 @@
     {
         if (!UserState.IsLoggedIn || !UserState.UserId.HasValue)
         {
-            isLoading = false;
+            Navigation.NavigateTo("/login");
             return;
         }
 

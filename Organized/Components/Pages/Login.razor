@@ -27,7 +27,16 @@
         <label for="LoginPassword">Password</label>
         <InputText @bind-Value="loginModel.Password" id="LoginPassword" class="form-input" type="password" placeholder="Enter your password" />
     </div>
-    <button type="submit" class="btn-auth">Sign In</button>
+    <button type="submit" class="btn-auth" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span>Signing in...</span>
+            }
+            else
+            {
+                <span>Sign In</span>
+            }
+        </button>
 </EditForm>
 
 <div class="auth-footer">
@@ -45,28 +54,41 @@
     public LoginModel? loginModel { get; set; } = new();
 
     private string? errorMessage;
+    private bool isLoading;
 
     private async Task HandleLogin(EditContext context)
     {
-        var request = new GetUserByEmailRequest
-        {
-            Email = loginModel.Email ?? string.Empty,
-            Password = loginModel.Password ?? string.Empty
-        };
-        var result = await LoginHandler.ProcessActiveRequestAsnync(request);
+        if (isLoading) return;
 
-        if (result.Value?.Found == true && result.Value.PasswordMatch)
+        isLoading = true;
+        errorMessage = null;
+
+        try
         {
-            UserState.SetUser(result.Value.Id, result.Value.Email, result.Value.Name);
-            Navigation.NavigateTo("/reservations");
+            var request = new GetUserByEmailRequest
+            {
+                Email = loginModel.Email ?? string.Empty,
+                Password = loginModel.Password ?? string.Empty
+            };
+            var result = await LoginHandler.ProcessActiveRequestAsnync(request);
+
+            if (result.Value?.Found == true && result.Value.PasswordMatch)
+            {
+                UserState.SetUser(result.Value.Id, result.Value.Email, result.Value.Name);
+                Navigation.NavigateTo("/reservations");
+            }
+            else if (result.Value?.Found == true && !result.Value.PasswordMatch)
+            {
+                errorMessage = "Invalid password.";
+            }
+            else
+            {
+                errorMessage = "User not found.";
+            }
         }
-        else if (result.Value?.Found == true && !result.Value.PasswordMatch)
+        finally
         {
-            errorMessage = "Invalid password.";
-        }
-        else
-        {
-            errorMessage = "User not found.";
+            isLoading = false;
         }
     }
 }

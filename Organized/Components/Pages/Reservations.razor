@@ -15,11 +15,7 @@
 <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
     <h1>Make a Reservation</h1>
 
-    @if (!UserState.IsLoggedIn)
-    {
-        <p>Please <a href="/login">log in</a> to make a reservation.</p>
-    }
-    else
+    @if (UserState.IsLoggedIn)
     {
         <p>Welcome, @UserState.UserEmail!</p>
 
@@ -151,6 +147,7 @@
     {
         if (!UserState.IsLoggedIn)
         {
+            Navigation.NavigateTo("/login");
             return;
         }
 
