@@ -3,63 +3,149 @@
 @using Organized.Application.Reservations
 @using Organized.Domain.Enums
 @using Organized.Services
+@rendermode InteractiveServer
 @inject GetUserReservationsRequestHandler GetReservationsHandler
+@inject CancelReservationRequestHandler CancelReservationHandler
 @inject UserStateService UserState
 @inject NavigationManager Navigation
 
 <PageTitle>My Reservations - Organized</PageTitle>
 
-<div style="padding: 20px; max-width: 800px; margin: 0 auto;">
-    <h1>My Reservations</h1>
-
-    @if (UserState.IsLoggedIn)
-    {
-        <p>Logged in as: @UserState.UserEmail</p>
-
-        @if (isLoading)
+<div class="my-reservations-page">
+    <div class="my-reservations-container">
+        @if (UserState.IsLoggedIn)
         {
-            <p>Loading reservations...</p>
-        }
-        else if (reservations == null || !reservations.Any())
-        {
-            <p>You have no reservations yet. <a href="/reservations">Make a reservation</a></p>
-        }
-        else
-        {
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                <thead>
-                    <tr style="background-color: #f0f0f0;">
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">ID</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Table</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">City</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Date</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var reservation in reservations)
-                    {
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.Id</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.TableName</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.City</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.ReservationDate.ToString("yyyy-MM-dd")</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">@reservation.Status</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+            <div class="my-reservations-card">
+                <div class="my-reservations-header">
+                    <h1>My Reservations</h1>
+                    <p class="user-email">Logged in as: @UserState.UserEmail</p>
+                </div>
 
-        <hr style="margin: 30px 0;" />
+                @if (isLoading)
+                {
+                    <div class="loading-spinner">
+                        Loading reservations...
+                    </div>
+                }
+                else if (reservations == null || !reservations.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>You have no reservations yet.</p>
+                        <a href="/reservations" class="reservation-link">Make a reservation</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-toolbar">
+                        <span class="reservation-count">@reservations.Count reservation@(reservations.Count != 1 ? "s" : "")</span>
+                        <button class="sort-btn" @onclick="ToggleSortOrder">
+                            Date
+                            @if (sortAscending)
+                            {
+                                <span class="sort-icon">&#9650;</span>
+                            }
+                            else
+                            {
+                                <span class="sort-icon">&#9660;</span>
+                            }
+                        </button>
+                    </div>
 
-        <p><a href="/reservations">Make another reservation</a></p>
-    }
+                    <div class="table-wrapper">
+                        <table class="reservations-table">
+                            <thead>
+                                <tr>
+                                    <th>Table</th>
+                                    <th>City</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var reservation in GetSortedReservations())
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="table-name">@reservation.TableName</span>
+                                        </td>
+                                        <td>@reservation.City</td>
+                                        <td>
+                                            <span class="date-text">@reservation.ReservationDate.ToString("MMM dd, yyyy")</span>
+                                            <span class="date-day">@reservation.ReservationDate.ToString("dddd")</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-@reservation.Status.ToString().ToLower()">
+                                                @reservation.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (reservation.Status == ReservationStatus.Pending)
+                                            {
+                                                <button class="cancel-action-btn" @onclick="() => ShowCancelModal(reservation)">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="no-action">—</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <hr class="reservation-divider" />
+
+                <div class="page-footer">
+                    <a href="/reservations" class="reservation-link">Make another reservation</a>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+@if (showCancelModal && reservationToCancel != null)
+{
+    <div class="modal-overlay" @onclick="CloseCancelModal">
+        <div class="cancel-modal" @onclick:stopPropagation="true">
+            <h2 class="cancel-modal-title">Cancel Reservation</h2>
+            <p class="cancel-modal-text">
+                Are you sure you want to cancel your reservation for
+                <strong>@reservationToCancel.TableName</strong> on
+                <strong>@reservationToCancel.ReservationDate.ToString("MMM dd, yyyy")</strong>?
+            </p>
+            <p class="cancel-modal-warning">This action cannot be undone.</p>
+            <div class="cancel-modal-actions">
+                <button class="cancel-modal-back-btn" @onclick="CloseCancelModal" disabled="@isCancelling">
+                    Go Back
+                </button>
+                <button class="cancel-modal-confirm-btn" @onclick="ConfirmCancellation" disabled="@isCancelling">
+                    @if (isCancelling)
+                    {
+                        <span>Cancelling...</span>
+                    }
+                    else
+                    {
+                        <span>Confirm Cancellation</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private List<ReservationResponse>? reservations;
     private bool isLoading = true;
+    private bool sortAscending = false;
+    private bool showCancelModal = false;
+    private bool isCancelling = false;
+    private ReservationResponse? reservationToCancel;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,13 +155,68 @@
             return;
         }
 
+        await LoadReservations();
+    }
+
+    private async Task LoadReservations()
+    {
+        isLoading = true;
         var request = new GetUserReservationsRequest
         {
-            UserId = UserState.UserId.Value
+            UserId = UserState.UserId!.Value
         };
 
         var result = await GetReservationsHandler.ProcessActiveRequestAsnync(request);
         reservations = result.Value;
         isLoading = false;
+    }
+
+    private List<ReservationResponse> GetSortedReservations()
+    {
+        if (reservations == null) return new();
+
+        return sortAscending
+            ? reservations.OrderBy(r => r.ReservationDate).ToList()
+            : reservations.OrderByDescending(r => r.ReservationDate).ToList();
+    }
+
+    private void ToggleSortOrder()
+    {
+        sortAscending = !sortAscending;
+    }
+
+    private void ShowCancelModal(ReservationResponse reservation)
+    {
+        reservationToCancel = reservation;
+        showCancelModal = true;
+    }
+
+    private void CloseCancelModal()
+    {
+        showCancelModal = false;
+        reservationToCancel = null;
+        isCancelling = false;
+    }
+
+    private async Task ConfirmCancellation()
+    {
+        if (reservationToCancel == null || !UserState.UserId.HasValue) return;
+
+        isCancelling = true;
+
+        var request = new CancelReservationRequest
+        {
+            ReservationId = reservationToCancel.Id,
+            UserId = UserState.UserId.Value
+        };
+
+        var result = await CancelReservationHandler.ProcessActiveRequestAsnync(request);
+
+        if (result.Value?.Success == true)
+        {
+            await LoadReservations();
+        }
+
+        CloseCancelModal();
     }
 }

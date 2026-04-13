@@ -20,6 +20,7 @@ builder.Services.AddScoped<GetAllTablesRequestHandler>();
 
 builder.Services.AddScoped<CreateReservationRequestHandler>();
 builder.Services.AddScoped<GetUserReservationsRequestHandler>();
+builder.Services.AddScoped<CancelReservationRequestHandler>();
 
 var app = builder.Build();
 
