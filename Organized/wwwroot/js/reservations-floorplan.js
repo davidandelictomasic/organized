@@ -121,5 +121,81 @@ window.ReservationsFloorPlan = {
             reservationsMap = null;
             reservationsMarkers = [];
         }
+    },
+
+    // Preview map for the reservation modal (read-only)
+    previewMap: null,
+    previewMarkers: [],
+
+    initializePreview: function (containerId, imageUrl, imgWidth, imgHeight, markerData, selectedTableId) {
+        // Clean up existing preview
+        if (this.previewMap) {
+            this.previewMap.remove();
+            this.previewMap = null;
+            this.previewMarkers = [];
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container) return false;
+
+        const bounds = [[0, 0], [imgHeight, imgWidth]];
+
+        this.previewMap = L.map(containerId, {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 2,
+            zoomControl: false,
+            attributionControl: false,
+            dragging: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: false
+        });
+
+        L.imageOverlay(imageUrl, bounds, { interactive: false }).addTo(this.previewMap);
+        this.previewMap.fitBounds(bounds);
+
+        // Add markers (non-clickable)
+        if (markerData && markerData.length > 0) {
+            markerData.forEach(function (m) {
+                var isSelected = m.tableId === selectedTableId;
+
+                var icon = L.divIcon({
+                    className: 'preview-marker-icon',
+                    html: '<div class="preview-marker ' + (isSelected ? 'preview-marker-selected' : '') + '">' +
+                          '<span>' + (m.tableId - 99) + '</span></div>',
+                    iconSize: [isSelected ? 36 : 28, isSelected ? 36 : 28],
+                    iconAnchor: [isSelected ? 18 : 14, isSelected ? 18 : 14]
+                });
+
+                var marker = L.marker([m.y, m.x], { icon: icon, interactive: true }).addTo(this.previewMap);
+                var popupText = isSelected
+                    ? '<b>Desk ' + (m.tableId - 99) + '</b><br><span style="color:#667eea;">You will be here</span>'
+                    : '<b>Desk ' + (m.tableId - 99) + '</b>';
+                marker.bindPopup(popupText);
+
+                marker.on('mouseover', function () { this.openPopup(); });
+                marker.on('mouseout', function () { this.closePopup(); });
+
+                this.previewMarkers.push(marker);
+            }.bind(this));
+        }
+
+        // Center on the selected table
+        var selected = markerData.find(function (m) { return m.tableId === selectedTableId; });
+        if (selected) {
+            this.previewMap.setView([selected.y, selected.x], 0);
+        }
+
+        return true;
+    },
+
+    disposePreview: function () {
+        if (this.previewMap) {
+            this.previewMap.remove();
+            this.previewMap = null;
+            this.previewMarkers = [];
+        }
     }
 };

@@ -43,7 +43,11 @@
 
             <div style="margin-bottom: 15px;">
                 <label for="dateInput">Reservation Date:</label><br/>
-                <input type="date" id="dateInput" @bind="reservationDate" style="width: 100%; padding: 8px; margin-top: 5px;" />
+                <DatePicker Value="reservationDate"
+                            ValueChanged="(date) => reservationDate = date"
+                            DisableWeekends="true"
+                            CssClass="date-input"
+                            Placeholder="Select a weekday" />
             </div>
 
             <button type="submit" style="padding: 10px 20px; background-color: #1e3a5f; color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -68,41 +72,44 @@
             <div id="reservations-floorplan-map"></div>
         </div>
 
-        <!-- Reservation modal/popup -->
         @if (showDatePicker && floorPlanSelectedTableId > 0)
         {
             <div class="modal-overlay" @onclick="CloseModal">
-                <div class="modal-content" @onclick:stopPropagation>
+                <div class="reservation-modal" @onclick:stopPropagation>
                     <button class="modal-close" @onclick="CloseModal">&times;</button>
-                    
-                    <h2 class="modal-title">Reserve Table @floorPlanSelectedTableId</h2>
-                    
-                    @if (floorPlanSelectedTable != null)
-                    {
-                        <p class="modal-subtitle">@floorPlanSelectedTable.CompanyName - @floorPlanSelectedTable.City</p>
-                    }
 
-                    <div class="form-group">
-                        <label for="floorPlanReservationDate">Select Date:</label>
-                        <input type="date" 
-                               id="floorPlanReservationDate" 
-                               @bind="floorPlanReservationDate" 
-                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
-                               class="date-input" />
-                    </div>
+                    <h2 class="reservation-modal-title">Reserve Desk @(floorPlanSelectedTableId - 99)</h2>
 
-                    <div class="modal-actions">
-                        <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
-                        <button class="btn-submit" @onclick="HandleFloorPlanSubmit" disabled="@isSubmitting">
-                            @if (isSubmitting)
-                            {
-                                <span>Creating...</span>
-                            }
-                            else
-                            {
-                                <span>Create Reservation</span>
-                            }
-                        </button>
+                    <div class="reservation-modal-body">
+                        <div class="reservation-modal-map">
+                            <div id="preview-floorplan-map"></div>
+                        </div>
+
+                        <div class="reservation-modal-form">
+                            <p class="reservation-modal-label">Pick a date for your reservation</p>
+
+                            <div class="reservation-modal-calendar">
+                                <DatePicker Value="floorPlanReservationDate"
+                                            ValueChanged="(date) => floorPlanReservationDate = date"
+                                            DisableWeekends="true"
+                                            Inline="true"
+                                            CssClass="inline-datepicker" />
+                            </div>
+
+                            <div class="reservation-modal-actions">
+                                <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
+                                <button class="btn-submit" @onclick="HandleFloorPlanSubmit" disabled="@isSubmitting">
+                                    @if (isSubmitting)
+                                    {
+                                        <span>Creating...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Confirm Reservation</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,10 +214,15 @@
         showDatePicker = true;
         message = null;
 
-        // Highlight the selected marker
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.highlightMarker", tableId);
 
         StateHasChanged();
+
+        // Initialize the preview map after the modal DOM renders
+        await Task.Delay(100);
+        var markerData = tablePositions.Select(p => new { tableId = p.TableId, x = p.X, y = p.Y }).ToArray();
+        await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.initializePreview",
+            "preview-floorplan-map", "groundplan.jpg", ImageWidth, ImageHeight, markerData, tableId);
     }
 
     private async Task HandleSubmit()
@@ -254,11 +266,12 @@
 
     private async Task CloseModal()
     {
+        await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.disposePreview");
+
         showDatePicker = false;
         floorPlanSelectedTableId = 0;
         floorPlanSelectedTable = null;
 
-        // Clear marker highlights
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.clearHighlights");
     }
 

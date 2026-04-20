@@ -1,0 +1,53 @@
+@using Organized.Services
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center navbar-logo-bg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <a href="/" class="text-xl font-semibold no-underline navbar-brand">Organized</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/" class="text-sm font-medium no-underline transition-colors navbar-link">Home</a>
+                <a href="/reservations" class="text-sm font-medium no-underline transition-colors navbar-link">Reservations</a>
+                <a href="/my-reservations" class="text-sm font-medium no-underline transition-colors navbar-link">My Reservations</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                @if (UserState.IsLoggedIn)
+                {
+                    <span class="text-sm navbar-email hidden sm:inline">@UserState.UserEmail</span>
+                    <a href="/login" @onclick="HandleSignOut" class="px-4 py-2 text-white no-underline rounded-lg text-sm font-medium transition-all navbar-btn-primary">
+                        Sign Out
+                    </a>
+                }
+                else
+                {
+                    <a href="/login" class="px-4 py-2 no-underline rounded-lg text-sm font-medium transition-colors navbar-btn-ghost">
+                        Sign In
+                    </a>
+                    <a href="/register" class="px-4 py-2 text-white no-underline rounded-lg text-sm font-medium transition-all navbar-btn-primary">
+                        Get Started
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private void HandleSignOut()
+    {
+        UserState.ClearUser();
+    }
+}

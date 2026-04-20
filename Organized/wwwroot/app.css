@@ -271,6 +271,120 @@ h1:focus {
     font-size: 1.1rem;
 }
 
+/* ============================================
+   FLATPICKR OVERRIDES
+   ============================================ */
+
+.flatpickr-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.flatpickr-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    background: #fff;
+}
+
+/* Override Flatpickr alt input styling */
+.flatpickr-input.active + input.flatpickr-input,
+input.flatpickr-input[readonly] {
+    cursor: pointer;
+    background: #f8f9fa;
+}
+
+/* Theme the calendar dropdown */
+.flatpickr-calendar {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    font-family: inherit;
+}
+
+.flatpickr-months .flatpickr-month {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+}
+
+.flatpickr-months .flatpickr-month .flatpickr-monthDropdown-months,
+.flatpickr-months .numInputWrapper .numInput {
+    background: transparent;
+    color: #fff;
+    font-weight: 600;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    fill: #fff;
+    color: #fff;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    fill: #fff;
+    color: #fff;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: rgba(255, 255, 255, 0.8);
+}
+
+span.flatpickr-weekday {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.flatpickr-day {
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.flatpickr-day:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: transparent;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+}
+
+.flatpickr-day.today {
+    border-color: #667eea;
+}
+
+.flatpickr-day.today:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #d0d0d0;
+    background: transparent;
+    text-decoration: line-through;
+}
+
+/* Inline calendar mode */
+.flatpickr-calendar.inline {
+    box-shadow: none;
+    border: 1px solid #e1e5e9;
+    border-radius: 10px;
+    margin: 0;
+    top: 0 !important;
+}
+
 /* Typewriter cursor animation */
 .typewriter-text {
     animation: blink 1s step-end infinite;
@@ -279,4 +393,380 @@ h1:focus {
 @keyframes blink {
     from, to { border-color: transparent; }
     50% { border-color: white; }
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+
+.navbar-logo-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar-brand {
+    color: #333;
+}
+
+.navbar-link {
+    color: #666;
+}
+
+.navbar-link:hover {
+    color: #667eea !important;
+}
+
+.navbar-email {
+    color: #666;
+}
+
+.navbar-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar-btn-primary:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.navbar-btn-ghost {
+    color: #667eea;
+}
+
+.navbar-btn-ghost:hover {
+    background: rgba(102, 126, 234, 0.08);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 4rem;
+}
+
+.hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    filter: blur(60px);
+}
+
+.hero-blob-1 {
+    width: 20rem;
+    height: 20rem;
+    top: -5rem;
+    right: -5rem;
+}
+
+.hero-blob-2 {
+    width: 20rem;
+    height: 20rem;
+    bottom: -5rem;
+    left: -5rem;
+}
+
+/* Animated dot grid */
+.hero-dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 32px 32px;
+    animation: dotDrift 20s linear infinite;
+}
+
+@keyframes dotDrift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 32px 32px;
+    }
+}
+
+/* Hero button row */
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Learn More button */
+.hero-learn-more {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    text-decoration: none;
+}
+
+.hero-learn-more:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+.hero-title {
+    color: #fff;
+}
+
+.hero-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-description {
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 36rem;
+}
+
+.hero-cta {
+    color: #667eea;
+}
+
+.hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   HOW IT WORKS SECTION
+   ============================================ */
+
+.hiw-section {
+    padding: 5rem 0;
+    background: #fff;
+}
+
+.hiw-title {
+    color: #333;
+}
+
+.hiw-subtitle {
+    color: #666;
+}
+
+.hiw-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+@media (max-width: 768px) {
+    .hiw-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+.hiw-step {
+    text-align: center;
+}
+
+.hiw-number {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.hiw-step-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.hiw-step-text {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ============================================
+   WHY CHOOSE US SECTION
+   ============================================ */
+
+.wcu-section {
+    padding: 5rem 0;
+    background: #fafafa;
+}
+
+.wcu-title {
+    color: #333;
+}
+
+.wcu-subtitle {
+    color: #666;
+}
+
+.wcu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .wcu-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.wcu-card {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+.wcu-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.wcu-icon-wrap {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.wcu-icon {
+    color: #667eea;
+}
+
+.wcu-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.wcu-card-text {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.footer-section {
+    background: #fafafa;
+    border-top: 1px solid #e9ecef;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.footer-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.footer-brand-text {
+    color: #333;
+}
+
+.footer-description {
+    font-size: 0.875rem;
+    color: #999;
+    line-height: 1.6;
+}
+
+.footer-heading {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    font-size: 0.875rem;
+    color: #666 !important;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #667eea !important;
+}
+
+.footer-cta-text {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.footer-cta-btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.2s;
+}
+
+.footer-cta-btn:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.footer-bottom {
+    border-top: 1px solid #e9ecef;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    text-align: center;
+}
+
+.footer-bottom p {
+    font-size: 0.875rem;
+    color: #adb5bd;
 }

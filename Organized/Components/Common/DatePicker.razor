@@ -1,0 +1,84 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+@if (Inline)
+{
+    <div id="@_elementId" class="@CssClass"></div>
+}
+else
+{
+    <input type="text"
+           id="@_elementId"
+           class="@CssClass"
+           placeholder="@Placeholder"
+           readonly />
+}
+
+@code {
+    private string _elementId = $"flatpickr-{Guid.NewGuid():N}";
+    private DotNetObjectReference<DatePicker>? _dotNetRef;
+    private bool _initialized;
+
+    [Parameter] public DateTime Value { get; set; } = DateTime.Today;
+    [Parameter] public EventCallback<DateTime> ValueChanged { get; set; }
+    [Parameter] public bool DisableWeekends { get; set; } = true;
+    [Parameter] public List<string>? DisabledDates { get; set; }
+    [Parameter] public string? MinDate { get; set; }
+    [Parameter] public string CssClass { get; set; } = "flatpickr-input";
+    [Parameter] public string Placeholder { get; set; } = "Select a date";
+    [Parameter] public bool Inline { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializePicker();
+        }
+    }
+
+    private async Task InitializePicker()
+    {
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        var options = new
+        {
+            disableWeekends = DisableWeekends,
+            disabledDates = DisabledDates ?? new List<string>(),
+            minDate = MinDate ?? "today",
+            inline = Inline
+        };
+
+        await JSRuntime.InvokeVoidAsync("FlatpickrInterop.initialize", _elementId, _dotNetRef, options);
+
+        if (Value != default)
+        {
+            await JSRuntime.InvokeVoidAsync("FlatpickrInterop.setDate", _elementId, Value.ToString("yyyy-MM-dd"));
+        }
+
+        _initialized = true;
+    }
+
+    [JSInvokable]
+    public async Task OnDateChanged(string dateStr)
+    {
+        if (DateTime.TryParse(dateStr, out var date))
+        {
+            Value = date;
+            await ValueChanged.InvokeAsync(date);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_initialized)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("FlatpickrInterop.destroy", _elementId);
+            }
+            catch { }
+        }
+        _dotNetRef?.Dispose();
+    }
+}

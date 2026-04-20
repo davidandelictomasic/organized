@@ -114,6 +114,154 @@
     color: #333;
 }
 
+/* ============================================
+   RESERVATION SPLIT MODAL
+   ============================================ */
+
+.reservation-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 92%;
+    max-width: 1050px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.reservation-modal-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #333;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #e1e5e9;
+    margin: 0;
+}
+
+.reservation-modal-body {
+    display: flex;
+    min-height: 480px;
+}
+
+.reservation-modal-map {
+    flex: 1;
+    min-width: 0;
+    border-right: 1px solid #e1e5e9;
+    background: #f8f9fa;
+}
+
+#preview-floorplan-map {
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+}
+
+.reservation-modal-form {
+    width: 340px;
+    flex-shrink: 0;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.reservation-modal-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.reservation-modal-calendar {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+/* Inline flatpickr inside the modal */
+.inline-datepicker .flatpickr-calendar {
+    box-shadow: none;
+    border: 1px solid #e1e5e9;
+    width: 100%;
+    max-width: 100%;
+}
+
+.reservation-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e1e5e9;
+}
+
+.reservation-modal-actions .btn-cancel,
+.reservation-modal-actions .btn-submit {
+    flex: 1;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Preview map markers */
+.preview-marker-icon {
+    background: transparent;
+    border: none;
+}
+
+.preview-marker {
+    width: 28px;
+    height: 28px;
+    background: #667eea;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.preview-marker span {
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.preview-marker-selected {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: pulseMarker 2s ease-in-out infinite;
+}
+
+@keyframes pulseMarker {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3); }
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 768px) {
+    .reservation-modal {
+        max-width: 95%;
+    }
+
+    .reservation-modal-body {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .reservation-modal-map {
+        border-right: none;
+        border-bottom: 1px solid #e1e5e9;
+        height: 250px;
+    }
+
+    #preview-floorplan-map {
+        min-height: 250px;
+    }
+
+    .reservation-modal-form {
+        width: 100%;
+    }
+}
+
 .modal-title {
     font-size: 1.5rem;
     color: #1e3a5f;
