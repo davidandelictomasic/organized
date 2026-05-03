@@ -1,0 +1,149 @@
+@using Organized.Application.Friends
+@inject SearchUsersRequestHandler SearchHandler
+@inject SendFriendRequestRequestHandler SendHandler
+
+<div class="add-friend-panel">
+    <div class="add-friend-panel-header">
+        <h2 class="add-friend-panel-title">Search for colleagues</h2>
+        <button class="add-friend-close" @onclick="OnClose" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <div class="add-friend-search">
+        <svg class="add-friend-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text"
+               class="add-friend-search-input"
+               placeholder="Search by name or email..."
+               value="@searchTerm"
+               @oninput="HandleSearchInput" />
+    </div>
+
+    @if (string.IsNullOrEmpty(errorMessage) == false)
+    {
+        <div class="add-friend-error">@errorMessage</div>
+    }
+
+    @if (string.IsNullOrEmpty(successMessage) == false)
+    {
+        <div class="add-friend-success">@successMessage</div>
+    }
+
+    <div class="add-friend-results">
+        @if (isSearching)
+        {
+            <div class="add-friend-empty-state">Searching...</div>
+        }
+        else if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            <div class="add-friend-empty-state">Start typing to find colleagues.</div>
+        }
+        else if (results == null || !results.Any())
+        {
+            <div class="add-friend-empty-state">No users found.</div>
+        }
+        else
+        {
+            @foreach (var user in results)
+            {
+                <div class="add-friend-row" @key="user.UserId">
+                    <div class="add-friend-row-info">
+                        <div class="friend-avatar friend-avatar-sm">
+                            <span class="friend-initials">@FriendStatus.GetInitials(user.Name)</span>
+                        </div>
+                        <div class="add-friend-row-text">
+                            <div class="add-friend-row-name">@user.Name</div>
+                            <div class="add-friend-row-email">@user.Email</div>
+                        </div>
+                    </div>
+                    <button class="add-friend-add-btn" @onclick="() => HandleAdd(user.UserId)">Add</button>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public int CurrentUserId { get; set; }
+    [Parameter] public EventCallback OnRequestSent { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string searchTerm = string.Empty;
+    private List<UserSearchResponse>? results;
+    private bool isSearching;
+    private string? errorMessage;
+    private string? successMessage;
+    private CancellationTokenSource? searchCts;
+
+    private async Task HandleSearchInput(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        errorMessage = null;
+        successMessage = null;
+
+        searchCts?.Cancel();
+        searchCts = new CancellationTokenSource();
+        var token = searchCts.Token;
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            results = null;
+            isSearching = false;
+            return;
+        }
+
+        isSearching = true;
+
+        try
+        {
+            await Task.Delay(200, token);
+            if (token.IsCancellationRequested) return;
+
+            var result = await SearchHandler.ProcessActiveRequestAsnync(new SearchUsersRequest
+            {
+                SearcherId = CurrentUserId,
+                SearchTerm = searchTerm
+            });
+
+            if (token.IsCancellationRequested) return;
+            results = result.Value ?? new List<UserSearchResponse>();
+        }
+        catch (TaskCanceledException) { }
+        finally
+        {
+            if (!token.IsCancellationRequested)
+            {
+                isSearching = false;
+            }
+        }
+    }
+
+    private async Task HandleAdd(int targetUserId)
+    {
+        errorMessage = null;
+        successMessage = null;
+
+        var result = await SendHandler.ProcessActiveRequestAsnync(new SendFriendRequestRequest
+        {
+            SenderId = CurrentUserId,
+            ReceiverId = targetUserId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            successMessage = "Friend request sent.";
+            results = results?.Where(u => u.UserId != targetUserId).ToList();
+            await OnRequestSent.InvokeAsync();
+        }
+        else
+        {
+            errorMessage = result.Value?.ErrorMessage ?? "Failed to send request.";
+        }
+    }
+}

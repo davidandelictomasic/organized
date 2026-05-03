@@ -1,0 +1,22 @@
+<div class="friends-filter">
+    <svg class="friends-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input type="text"
+           class="friends-filter-input"
+           placeholder="Search friends..."
+           value="@FilterText"
+           @oninput="HandleInput" />
+</div>
+
+@code {
+    [Parameter] public string FilterText { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> FilterTextChanged { get; set; }
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? string.Empty;
+        await FilterTextChanged.InvokeAsync(value);
+    }
+}

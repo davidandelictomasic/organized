@@ -1,0 +1,65 @@
+@using Organized.Application.Friends
+
+@if (Friends == null)
+{
+    <div class="friends-loading">Loading friends...</div>
+}
+else if (!Friends.Any())
+{
+    <div class="friends-empty">
+        @if (HasFilter)
+        {
+            <p>No friends match your search.</p>
+        }
+        else
+        {
+            <p>You haven't added any friends yet. Click "Add Friend" to get started!</p>
+        }
+    </div>
+}
+else
+{
+    @if (online.Any())
+    {
+        <div class="friends-section-label">ONLINE — @online.Count</div>
+        <div class="friends-section">
+            @foreach (var friend in online)
+            {
+                <FriendCard Friend="@friend" OnRemove="@OnRemove" />
+            }
+        </div>
+    }
+
+    @if (offline.Any())
+    {
+        <div class="friends-section-label">OFFLINE — @offline.Count</div>
+        <div class="friends-section">
+            @foreach (var friend in offline)
+            {
+                <FriendCard Friend="@friend" OnRemove="@OnRemove" />
+            }
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public List<FriendResponse>? Friends { get; set; }
+    [Parameter] public bool HasFilter { get; set; }
+    [Parameter] public EventCallback<int> OnRemove { get; set; }
+
+    private List<FriendResponse> online = new();
+    private List<FriendResponse> offline = new();
+
+    protected override void OnParametersSet()
+    {
+        if (Friends == null)
+        {
+            online = new();
+            offline = new();
+            return;
+        }
+
+        online = Friends.Where(f => FriendStatus.IsOnline(f.LastOnline)).ToList();
+        offline = Friends.Where(f => !FriendStatus.IsOnline(f.LastOnline)).ToList();
+    }
+}

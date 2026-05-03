@@ -1,0 +1,51 @@
+@using Organized.Application.Friends
+
+<div class="friend-card">
+    <div class="friend-info">
+        <div class="friend-avatar @(IsOnline ? "friend-avatar-online" : "")">
+            <span class="friend-initials">@FriendStatus.GetInitials(Friend.Name)</span>
+            <span class="friend-status-dot @(IsOnline ? "dot-online" : "dot-offline")"></span>
+        </div>
+        <div class="friend-text">
+            <div class="friend-name">@Friend.Name</div>
+            <div class="friend-status-text">@FriendStatus.GetLastSeenText(Friend.LastOnline)</div>
+        </div>
+    </div>
+
+    <div class="friend-actions">
+        <button class="friend-action-btn" @onclick="ToggleMenu" @onclick:stopPropagation="true" title="More">
+            <svg class="friend-icon-dots" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="5" r="1.5"></circle>
+                <circle cx="12" cy="12" r="1.5"></circle>
+                <circle cx="12" cy="19" r="1.5"></circle>
+            </svg>
+        </button>
+
+        @if (menuOpen)
+        {
+            <div class="friend-menu-overlay" @onclick="CloseMenu"></div>
+            <div class="friend-menu">
+                <button class="friend-menu-item friend-menu-danger" @onclick="HandleRemove">
+                    Remove Friend
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FriendResponse Friend { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnRemove { get; set; }
+
+    private bool menuOpen;
+    private bool IsOnline => FriendStatus.IsOnline(Friend.LastOnline);
+
+    private void ToggleMenu() => menuOpen = !menuOpen;
+    private void CloseMenu() => menuOpen = false;
+
+    private async Task HandleRemove()
+    {
+        menuOpen = false;
+        await OnRemove.InvokeAsync(Friend.UserId);
+    }
+}

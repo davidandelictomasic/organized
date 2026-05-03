@@ -53,6 +53,14 @@ namespace Organized.Application.Users.User
             }
 
             var passwordMatch = user.Password == request.Password;
+
+            if (passwordMatch)
+            {
+                user.LastOnline = DateTime.UtcNow;
+                _unitOfWork.UserRepository.Update(user);
+                await _unitOfWork.SaveAsync();
+            }
+
             result.SetResult(new GetUserByEmailResponse(user.Id, user.Name, user.Email, passwordMatch));
             return result;
         }

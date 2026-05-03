@@ -1,0 +1,43 @@
+@using Organized.Application.Friends
+
+<div class="pending-panel">
+    <div class="pending-panel-header">Friend Requests</div>
+
+    @if (Pending == null || !Pending.Any())
+    {
+        <div class="pending-panel-empty">No pending requests</div>
+    }
+    else
+    {
+        <div class="pending-panel-list">
+            @foreach (var req in Pending)
+            {
+                <div class="pending-row" @key="req.RequestId">
+                    <div class="pending-row-info">
+                        <div class="friend-avatar friend-avatar-sm">
+                            <span class="friend-initials">@FriendStatus.GetInitials(req.SenderName)</span>
+                        </div>
+                        <div class="pending-row-text">
+                            <div class="pending-row-name">@req.SenderName</div>
+                            <div class="pending-row-email">@req.SenderEmail</div>
+                        </div>
+                    </div>
+                    <div class="pending-row-actions">
+                        <button class="pending-btn pending-btn-accept" @onclick="() => OnAccept.InvokeAsync(req.RequestId)">
+                            Accept
+                        </button>
+                        <button class="pending-btn pending-btn-decline" @onclick="() => OnDecline.InvokeAsync(req.RequestId)">
+                            Decline
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<PendingFriendRequestResponse>? Pending { get; set; }
+    [Parameter] public EventCallback<int> OnAccept { get; set; }
+    [Parameter] public EventCallback<int> OnDecline { get; set; }
+}

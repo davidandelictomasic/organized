@@ -1,4 +1,5 @@
 ﻿using Organized.Application.Common.Model;
+using Organized.Domain.Entities.Achievements;
 using Organized.Domain.Persistence.Common;
 
 namespace Organized.Application.Users.User
@@ -41,11 +42,23 @@ namespace Organized.Application.Users.User
 
             };
              await _unitOfWork.UserRepository.InsertAsync(user);
-            //var validationResult = await user.Create(_unitOfWork.Repository);
-            //result.SetValidationResult(validationResult.ValidationResult);
-            //if (result.HasError)
-            //    return result;
             await _unitOfWork.SaveAsync();
+
+            // Initialize all achievements for the new user with progress = 0
+            var achievements = await _unitOfWork.AchievementRepository.GetAll();
+            foreach (var achievement in achievements)
+            {
+                var userAchievement = new UserAchievement
+                {
+                    UserId = user.Id,
+                    AchievementId = achievement.Id,
+                    Progress = 0,
+                    IsCompleted = false
+                };
+                await _unitOfWork.UserAchievementRepository.InsertAsync(userAchievement);
+            }
+            await _unitOfWork.SaveAsync();
+
             result.SetResult(new SuccessPostResponse(user.Id));
             return result;
         }

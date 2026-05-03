@@ -1,0 +1,147 @@
+@page "/friends"
+@layout HomeLayout
+@using Organized.Application.Friends
+@using Organized.Application.Users.User
+@using Organized.Services
+@inject GetUserFriendsRequestHandler GetFriendsHandler
+@inject GetPendingFriendRequestsRequestHandler GetPendingHandler
+@inject AcceptFriendRequestRequestHandler AcceptHandler
+@inject DeclineFriendRequestRequestHandler DeclineHandler
+@inject RemoveFriendRequestHandler RemoveHandler
+@inject UpdateUserLastOnlineRequestHandler UpdateLastOnlineHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<PageTitle>Friends - Organized</PageTitle>
+
+<div class="friends-page">
+    <FriendsHeader
+        OnlineCount="@OnlineCount"
+        TotalCount="@(friends?.Count ?? 0)"
+        PendingCount="@(pending?.Count ?? 0)"
+        Pending="@pending"
+        OnAddFriendClick="ToggleAddPanel"
+        OnAccept="HandleAccept"
+        OnDecline="HandleDecline" />
+
+    @if (showAddPanel && UserState.UserId.HasValue)
+    {
+        <AddFriendPanel
+            CurrentUserId="@UserState.UserId.Value"
+            OnRequestSent="LoadPending"
+            OnClose="CloseAddPanel" />
+    }
+
+    <FriendsSearch FilterText="@filterText" FilterTextChanged="HandleFilterChanged" />
+
+    <FriendsList
+        Friends="@FilteredFriends"
+        HasFilter="@(!string.IsNullOrWhiteSpace(filterText))"
+        OnRemove="HandleRemove" />
+</div>
+
+@code {
+    private List<FriendResponse>? friends;
+    private List<PendingFriendRequestResponse>? pending;
+    private string filterText = string.Empty;
+    private bool showAddPanel;
+
+    private int OnlineCount => friends?.Count(f => FriendStatus.IsOnline(f.LastOnline)) ?? 0;
+
+    private List<FriendResponse>? FilteredFriends
+    {
+        get
+        {
+            if (friends == null) return null;
+            if (string.IsNullOrWhiteSpace(filterText)) return friends;
+
+            var term = filterText.Trim();
+            return friends
+                .Where(f => (f.Name ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                            (f.Email ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await UpdateLastOnlineHandler.ProcessActiveRequestAsnync(new UpdateUserLastOnlineRequest
+        {
+            UserId = UserState.UserId!.Value
+        });
+
+        await LoadFriends();
+        await LoadPending();
+    }
+
+    private async Task LoadFriends()
+    {
+        var result = await GetFriendsHandler.ProcessActiveRequestAsnync(new GetUserFriendsRequest
+        {
+            UserId = UserState.UserId!.Value
+        });
+        friends = result.Value ?? new List<FriendResponse>();
+    }
+
+    private async Task LoadPending()
+    {
+        var result = await GetPendingHandler.ProcessActiveRequestAsnync(new GetPendingFriendRequestsRequest
+        {
+            UserId = UserState.UserId!.Value
+        });
+        pending = result.Value ?? new List<PendingFriendRequestResponse>();
+    }
+
+    private void ToggleAddPanel() => showAddPanel = !showAddPanel;
+    private void CloseAddPanel() => showAddPanel = false;
+    private void HandleFilterChanged(string value) => filterText = value;
+
+    private async Task HandleAccept(int requestId)
+    {
+        var result = await AcceptHandler.ProcessActiveRequestAsnync(new AcceptFriendRequestRequest
+        {
+            UserId = UserState.UserId!.Value,
+            RequestId = requestId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            await LoadFriends();
+            await LoadPending();
+        }
+    }
+
+    private async Task HandleDecline(int requestId)
+    {
+        var result = await DeclineHandler.ProcessActiveRequestAsnync(new DeclineFriendRequestRequest
+        {
+            UserId = UserState.UserId!.Value,
+            RequestId = requestId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            await LoadPending();
+        }
+    }
+
+    private async Task HandleRemove(int friendId)
+    {
+        var result = await RemoveHandler.ProcessActiveRequestAsnync(new RemoveFriendRequest
+        {
+            UserId = UserState.UserId!.Value,
+            FriendId = friendId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            await LoadFriends();
+        }
+    }
+}
