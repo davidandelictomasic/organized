@@ -6,5 +6,6 @@ namespace Organized.Domain.Entities.Achievements
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public int MaxProgress { get; set; }
+        public bool IsHidden { get; set; } = false;
     }
 }

@@ -27,6 +27,10 @@ namespace Organized.Infrastructure.Database.Configurations.Achievements
             builder.Property(a => a.MaxProgress)
                    .HasColumnName("max_progress")
                    .IsRequired();
+
+            builder.Property(a => a.IsHidden)
+                   .HasColumnName("is_hidden")
+                   .IsRequired();
         }
     }
 }

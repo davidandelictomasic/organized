@@ -1,0 +1,75 @@
+<div class="achievement-card @(IsCompleted ? "achievement-completed" : "") @(IsHidden && !IsCompleted ? "achievement-hidden" : "")">
+    <div class="achievement-icon-wrapper">
+        <div class="achievement-icon @GetIconColorClass()">
+            <AchievementIcon Name="@(IsHidden && !IsCompleted ? "Hidden" : Name)" />
+        </div>
+    </div>
+
+    <div class="achievement-content">
+        <div class="achievement-header">
+            <h3 class="achievement-name">
+                @if (IsHidden && !IsCompleted)
+                {
+                    <span>Hidden Achievement</span>
+                }
+                else
+                {
+                    <span>@Name</span>
+                }
+            </h3>
+            @if (IsCompleted)
+            {
+                <span class="achievement-badge">Completed</span>
+            }
+        </div>
+        <p class="achievement-description">
+            @if (IsHidden && !IsCompleted)
+            {
+                <span>Keep exploring to discover this achievement!</span>
+            }
+            else
+            {
+                <span>@Description</span>
+            }
+        </p>
+
+        <div class="achievement-progress-info">
+            <span class="achievement-progress-count">@Progress / @MaxProgress</span>
+            <span class="achievement-progress-percent">@(ProgressPercent)%</span>
+        </div>
+        <div class="achievement-progress-bar">
+            <div class="achievement-progress-fill @(IsCompleted ? "achievement-progress-done" : "")"
+                 style="width: @(ProgressPercent)%"></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public int Progress { get; set; }
+    [Parameter] public int MaxProgress { get; set; }
+    [Parameter] public bool IsCompleted { get; set; }
+    [Parameter] public bool IsHidden { get; set; }
+
+    private int ProgressPercent => MaxProgress > 0
+        ? (int)Math.Round((double)Progress / MaxProgress * 100)
+        : 0;
+
+    private string GetIconColorClass() => Name switch
+    {
+        "First Reservation" when IsCompleted => "icon-green",
+        "First Reservation" => "icon-teal",
+        "Regular" => "icon-blue",
+        "Frequent Visitor" => "icon-orange",
+        "Power User" => "icon-yellow",
+        "Legend" => "icon-purple",
+        "Early Bird" => "icon-amber",
+        "Night Owl" => "icon-indigo",
+        "Explorer" => "icon-cyan",
+        "Social Butterfly" => "icon-pink",
+        "Networking Pro" => "icon-red",
+        _ when IsCompleted => "icon-green",
+        _ => "icon-gray"
+    };
+}

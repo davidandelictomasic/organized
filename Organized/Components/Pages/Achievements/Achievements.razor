@@ -1,0 +1,81 @@
+@page "/achievements"
+@layout HomeLayout
+@using Organized.Application.Achievements
+@using Organized.Services
+@inject GetUserAchievementsRequestHandler GetAchievementsHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<PageTitle>Achievements - Organized</PageTitle>
+
+<div class="achievements-page">
+    <div class="achievements-header">
+        <h1 class="achievements-title">Achievements</h1>
+        <p class="achievements-subtitle">Track your progress and earn rewards for working from the office</p>
+    </div>
+
+    @if (achievements == null)
+    {
+        <div class="achievements-loading">
+            <p>Loading achievements...</p>
+        </div>
+    }
+    else if (!achievements.Any())
+    {
+        <div class="achievements-empty">
+            <p>No achievements yet. Start using the app to unlock them!</p>
+        </div>
+    }
+    else
+    {
+        <div class="overall-progress-card">
+            <div class="overall-progress-header">
+                <span class="overall-progress-label">Overall Progress</span>
+                <span class="overall-progress-stats">@completedCount / @totalVisible Completed (@overallPercent%)</span>
+            </div>
+            <div class="overall-progress-bar">
+                <div class="overall-progress-fill" style="width: @(overallPercent)%"></div>
+            </div>
+        </div>
+
+        <div class="achievements-grid">
+            @foreach (var achievement in achievements)
+            {
+                <AchievementCard Name="@achievement.Name"
+                                 Description="@achievement.Description"
+                                 Progress="@achievement.Progress"
+                                 MaxProgress="@achievement.MaxProgress"
+                                 IsCompleted="@achievement.IsCompleted"
+                                 IsHidden="@achievement.IsHidden" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<UserAchievementResponse>? achievements;
+    private int completedCount;
+    private int totalVisible;
+    private int overallPercent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        var result = await GetAchievementsHandler.ProcessActiveRequestAsnync(
+            new GetUserAchievementsRequest { UserId = UserState.UserId!.Value });
+
+        achievements = result.Value;
+
+        if (achievements != null && achievements.Any())
+        {
+            completedCount = achievements.Count(a => a.IsCompleted);
+            totalVisible = achievements.Count;
+            overallPercent = (int)Math.Round((double)completedCount / totalVisible * 100);
+        }
+    }
+}
