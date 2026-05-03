@@ -61,7 +61,6 @@
     }
 </div>
 
-<!-- Floor Plan Section -->
 <div class="floorplan-section">
     <h2 class="floorplan-title">Or Select from Floor Plan</h2>
     <p class="floorplan-subtitle">Use scroll wheel to zoom, drag to pan. Click on a table to reserve.</p>
@@ -124,7 +123,6 @@
     private string? message;
     private bool isSuccess;
 
-    // Floor plan specific fields
     private int floorPlanSelectedTableId = 0;
     private CompanyTableResponse? floorPlanSelectedTable;
     private DateTime floorPlanReservationDate = DateTime.Today;
@@ -133,21 +131,17 @@
     private DotNetObjectReference<Reservations>? dotNetRef;
     private bool mapInitialized = false;
 
-    // Image bounds matching the original Leaflet setup
     private const int ImageWidth = 3000;
     private const int ImageHeight = 2500;
 
-    // Table positions using pixel coordinates [y, x] from original markers
-    // Converted to match database table IDs (100-105 for 6 desks)
-    // Original: { id: 1, position: [1308, 535.5] } etc.
     private List<TablePosition> tablePositions = new()
     {
-        new TablePosition { TableId = 100, X = 535.5, Y = 1308 },   // Desk 1
-        new TablePosition { TableId = 101, X = 640.5, Y = 1329 },   // Desk 2
-        new TablePosition { TableId = 102, X = 740.5, Y = 1319 },   // Desk 3
-        new TablePosition { TableId = 103, X = 542, Y = 1175 },     // Desk 4
-        new TablePosition { TableId = 104, X = 644.25, Y = 1150.5 }, // Desk 5
-        new TablePosition { TableId = 105, X = 798, Y = 1149 },     // Desk 6
+        new TablePosition { TableId = 100, X = 535.5, Y = 1308 },
+        new TablePosition { TableId = 101, X = 640.5, Y = 1329 },
+        new TablePosition { TableId = 102, X = 740.5, Y = 1319 },
+        new TablePosition { TableId = 103, X = 542, Y = 1175 },
+        new TablePosition { TableId = 104, X = 644.25, Y = 1150.5 },
+        new TablePosition { TableId = 105, X = 798, Y = 1149 },
     };
 
     protected override async Task OnInitializedAsync()
@@ -174,15 +168,13 @@
     {
         try
         {
-            await Task.Delay(200); // Wait for DOM
+            await Task.Delay(200);
 
             dotNetRef = DotNetObjectReference.Create(this);
 
-            // Initialize Leaflet map with bounds matching original setup
             await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.initialize",
                 "groundplan.jpg", ImageWidth, ImageHeight, dotNetRef);
 
-            // Add markers for each table using pixel coordinates
             if (tables != null)
             {
                 foreach (var pos in tablePositions)
@@ -190,7 +182,6 @@
                     var tableInfo = tables.FirstOrDefault(t => t.Id == pos.TableId);
                     if (tableInfo != null)
                     {
-                        // Pass X, Y pixel coordinates directly
                         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.addMarker",
                             pos.TableId, pos.X, pos.Y,
                             $"Desk {pos.TableId - 99}", dotNetRef);
@@ -218,7 +209,6 @@
 
         StateHasChanged();
 
-        // Initialize the preview map after the modal DOM renders
         await Task.Delay(100);
         var markerData = tablePositions.Select(p => new { tableId = p.TableId, x = p.X, y = p.Y }).ToArray();
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.initializePreview",
@@ -337,7 +327,7 @@
     private class TablePosition
     {
         public int TableId { get; set; }
-        public double X { get; set; }  // Pixel X coordinate (lng in Leaflet)
-        public double Y { get; set; }  // Pixel Y coordinate (lat in Leaflet)
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 }

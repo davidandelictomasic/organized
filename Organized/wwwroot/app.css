@@ -271,10 +271,6 @@ h1:focus {
     font-size: 1.1rem;
 }
 
-/* ============================================
-   FLATPICKR OVERRIDES
-   ============================================ */
-
 .flatpickr-input {
     width: 100%;
     padding: 0.75rem 1rem;
@@ -293,14 +289,12 @@ h1:focus {
     background: #fff;
 }
 
-/* Override Flatpickr alt input styling */
 .flatpickr-input.active + input.flatpickr-input,
 input.flatpickr-input[readonly] {
     cursor: pointer;
     background: #f8f9fa;
 }
 
-/* Theme the calendar dropdown */
 .flatpickr-calendar {
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -376,7 +370,6 @@ span.flatpickr-weekday {
     text-decoration: line-through;
 }
 
-/* Inline calendar mode */
 .flatpickr-calendar.inline {
     box-shadow: none;
     border: 1px solid #e1e5e9;
@@ -385,7 +378,6 @@ span.flatpickr-weekday {
     top: 0 !important;
 }
 
-/* Typewriter cursor animation */
 .typewriter-text {
     animation: blink 1s step-end infinite;
 }
@@ -394,10 +386,6 @@ span.flatpickr-weekday {
     from, to { border-color: transparent; }
     50% { border-color: white; }
 }
-
-/* ============================================
-   NAVBAR
-   ============================================ */
 
 .navbar-logo-bg {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -435,10 +423,6 @@ span.flatpickr-weekday {
     background: rgba(102, 126, 234, 0.08);
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
-
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding-top: 4rem;
@@ -465,7 +449,6 @@ span.flatpickr-weekday {
     left: -5rem;
 }
 
-/* Animated dot grid */
 .hero-dot-grid {
     position: absolute;
     inset: 0;
@@ -483,7 +466,6 @@ span.flatpickr-weekday {
     }
 }
 
-/* Hero button row */
 .hero-buttons {
     display: flex;
     gap: 1rem;
@@ -492,7 +474,6 @@ span.flatpickr-weekday {
     flex-wrap: wrap;
 }
 
-/* Learn More button */
 .hero-learn-more {
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.1);
@@ -527,10 +508,6 @@ span.flatpickr-weekday {
     transform: translateY(-2px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
-
-/* ============================================
-   HOW IT WORKS SECTION
-   ============================================ */
 
 .hiw-section {
     padding: 5rem 0;
@@ -588,10 +565,6 @@ span.flatpickr-weekday {
     color: #666;
     line-height: 1.6;
 }
-
-/* ============================================
-   WHY CHOOSE US SECTION
-   ============================================ */
 
 .wcu-section {
     padding: 5rem 0;
@@ -659,10 +632,6 @@ span.flatpickr-weekday {
     color: #666;
     line-height: 1.6;
 }
-
-/* ============================================
-   FOOTER
-   ============================================ */
 
 .footer-section {
     background: #fafafa;

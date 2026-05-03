@@ -5,7 +5,6 @@ window.FlatpickrInterop = {
         const el = document.getElementById(elementId);
         if (!el) return;
 
-        // Destroy existing instance if any
         if (this.instances[elementId]) {
             this.instances[elementId].destroy();
         }
@@ -29,14 +28,12 @@ window.FlatpickrInterop = {
             config.altFormat = "M d, Y";
         }
 
-        // Disable weekends if requested
         if (options.disableWeekends) {
             config.disable.push(function (date) {
                 return date.getDay() === 0 || date.getDay() === 6;
             });
         }
 
-        // Disable specific dates (holidays)
         if (options.disabledDates && options.disabledDates.length > 0) {
             options.disabledDates.forEach(function (d) {
                 config.disable.push(d);

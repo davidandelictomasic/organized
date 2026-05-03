@@ -29,6 +29,7 @@ namespace Organized.Infrastructure.Persistence.Common
 
         public void Update(TEntity entity)
         {
+            
             _dbSet.Update(entity);
         }
 
