@@ -118,73 +118,149 @@
     overflow: hidden;
 }
 
-.reservation-modal-title {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #333;
-    padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid #e1e5e9;
-    margin: 0;
-}
-
 .reservation-modal-body {
     display: flex;
-    min-height: 480px;
+    min-height: 560px;
 }
 
 .reservation-modal-map {
     flex: 1;
     min-width: 0;
-    border-right: 1px solid #e1e5e9;
-    background: #f8f9fa;
+    border-right: 1px solid #e5e7eb;
+    background: #f5f7fa;
 }
 
 #preview-floorplan-map {
     width: 100%;
     height: 100%;
-    min-height: 480px;
+    min-height: 560px;
 }
 
 .reservation-modal-form {
-    width: 340px;
+    width: 480px;
     flex-shrink: 0;
-    padding: 1.75rem;
     display: flex;
     flex-direction: column;
+}
+
+.reservation-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.reservation-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.reservation-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #94a3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.reservation-modal-close:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+.reservation-modal-content {
+    flex: 1;
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
 }
 
 .reservation-modal-label {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: #475569;
+    margin: 0 0 1rem 0;
 }
 
 .reservation-modal-calendar {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.reservation-modal-selected {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #1e40af;
+    font-size: 0.9rem;
+}
+
+.reservation-modal-selected strong {
+    font-weight: 700;
+    color: #1e3a8a;
 }
 
 .inline-datepicker .flatpickr-calendar {
     box-shadow: none;
-    border: 1px solid #e1e5e9;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
     width: 100%;
     max-width: 100%;
+    padding: 0.5rem;
 }
 
 .reservation-modal-actions {
     display: flex;
     gap: 0.75rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e1e5e9;
+    padding: 1rem 1.75rem;
+    border-top: 1px solid #e5e7eb;
 }
 
-.reservation-modal-actions .btn-cancel,
-.reservation-modal-actions .btn-submit {
-    flex: 1;
+.reservation-modal-cancel,
+.reservation-modal-confirm {
     padding: 0.85rem 1.5rem;
     font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reservation-modal-cancel {
+    flex: 1;
+    background: white;
+    color: #475569;
+    border: 1px solid #e5e7eb;
+}
+
+.reservation-modal-cancel:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.reservation-modal-confirm {
+    flex: 1.6;
+    background: #2563eb;
+    color: white;
+    border: none;
+}
+
+.reservation-modal-confirm:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.reservation-modal-confirm:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .preview-marker-icon {
@@ -236,7 +312,7 @@
 
     .reservation-modal-map {
         border-right: none;
-        border-bottom: 1px solid #e1e5e9;
+        border-bottom: 1px solid #e5e7eb;
         height: 250px;
     }
 
@@ -246,6 +322,13 @@
 
     .reservation-modal-form {
         width: 100%;
+    }
+
+    .reservation-modal-header,
+    .reservation-modal-content,
+    .reservation-modal-actions {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
     }
 }
 
@@ -454,84 +537,23 @@
     color: #2c5282;
 }
 
-.my-reservations-page {
+.my-resv-page {
     padding-top: 6rem;
     min-height: 100vh;
-    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+    background: #f5f7fa;
 }
 
-.my-reservations-container {
-    max-width: 960px;
+.my-resv-container {
+    max-width: 1100px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-.my-reservations-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    padding: 2.5rem;
-}
-
-.my-reservations-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.my-reservations-header h1 {
+.my-resv-title {
     font-size: 2rem;
-    color: #1e3a5f;
-    margin-bottom: 0.5rem;
+    color: #0f172a;
     font-weight: 700;
-}
-
-.my-reservations-header .user-email {
-    color: #64748b;
-    font-size: 0.95rem;
-}
-
-.table-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.reservation-count {
-    color: #64748b;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.sort-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.sort-btn:hover {
-    background: #e2e8f0;
-    color: #1e3a5f;
-}
-
-.sort-icon {
-    font-size: 0.7rem;
-    line-height: 1;
-}
-
-.table-wrapper {
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
+    margin: 0 0 1.5rem 0;
 }
 
 .loading-spinner {
@@ -547,7 +569,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #e2e8f0;
-    border-top-color: #1e3a5f;
+    border-top-color: #2563eb;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-bottom: 1rem;
@@ -558,133 +580,318 @@
 }
 
 .empty-state {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
     text-align: center;
     padding: 3rem 2rem;
     color: #64748b;
 }
 
 .empty-state-icon {
-    font-size: 3rem;
+    display: flex;
+    justify-content: center;
     margin-bottom: 1rem;
+    color: #94a3b8;
+}
+
+.my-resv-empty-svg {
+    width: 48px;
+    height: 48px;
 }
 
 .empty-state p {
     margin-bottom: 1rem;
 }
 
-.reservations-table {
-    width: 100%;
-    border-collapse: collapse;
+.my-resv-toolbar {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
-.reservations-table thead tr {
-    background: #1e3a5f;
+.my-resv-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
-.reservations-table th {
-    padding: 0.85rem 1.25rem;
-    text-align: left;
-    color: rgba(255, 255, 255, 0.95);
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.reservations-table td {
-    padding: 0.9rem 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-    font-size: 0.93rem;
-    vertical-align: middle;
-}
-
-.reservations-table tbody tr {
-    transition: background 0.15s ease;
-}
-
-.reservations-table tbody tr:hover {
-    background: #f8fafc;
-}
-
-.reservations-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.table-name {
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.date-text {
-    display: block;
+.my-resv-count {
+    color: #64748b;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
-.date-day {
-    display: block;
-    font-size: 0.8rem;
+.my-resv-toolbar-icon {
     color: #94a3b8;
-    margin-top: 0.15rem;
 }
 
-.status-badge {
-    display: inline-block;
-    padding: 0.3rem 0.7rem;
-    border-radius: 20px;
-    font-size: 0.78rem;
+.my-resv-filter {
+    padding: 0.55rem 0.9rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #334155;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.my-resv-filter:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.my-resv-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
-    text-transform: capitalize;
-}
-
-.status-pending {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.status-ongoing {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.status-confirmed {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.status-cancelled {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.status-completed {
-    background: #e0e7ff;
-    color: #3730a3;
-}
-
-.cancel-action-btn {
-    padding: 0.35rem 0.85rem;
-    background: transparent;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: #dc2626;
+    color: #334155;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.cancel-action-btn:hover {
+.my-resv-sort:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.my-resv-new-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.my-resv-new-btn:hover {
+    background: #1d4ed8;
+    color: white;
+}
+
+.my-resv-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.my-resv-row {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.7fr) auto auto;
+    align-items: center;
+    gap: 1.25rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.my-resv-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.my-resv-row-company {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.my-resv-row-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.my-resv-row-company-text {
+    min-width: 0;
+}
+
+.my-resv-row-name {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.my-resv-row-city {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 0.15rem;
+}
+
+.my-resv-row-date,
+.my-resv-row-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.my-resv-row-meta-icon {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.my-resv-row-date-main {
+    font-weight: 600;
+}
+
+.my-resv-row-day {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.1rem;
+}
+
+.my-resv-badge {
+    display: inline-block;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.my-resv-badge-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.my-resv-badge-ongoing {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.my-resv-badge-completed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.my-resv-badge-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.my-resv-row-menu {
+    position: relative;
+    z-index: 51;
+}
+
+.my-resv-row-menu.is-open {
+    z-index: 100;
+}
+
+.my-resv-menu-btn {
+    background: transparent;
+    border: none;
+    padding: 0.45rem;
+    cursor: pointer;
+    color: #64748b;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.my-resv-menu-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.my-resv-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    padding: 0.4rem 0;
+    z-index: 52;
+}
+
+.my-resv-menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #334155;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.my-resv-menu-item:hover {
+    background: #f8fafc;
+}
+
+.my-resv-menu-item-danger {
+    color: #dc2626;
+}
+
+.my-resv-menu-item-danger:hover {
     background: #fef2f2;
-    border-color: #fecaca;
 }
 
-.no-action {
-    color: #cbd5e1;
+.my-resv-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: transparent;
 }
 
-.page-footer {
-    text-align: center;
+.my-resv-icon-xs {
+    width: 14px;
+    height: 14px;
+}
+
+.my-resv-icon-sm {
+    width: 18px;
+    height: 18px;
+}
+
+.my-resv-icon-md {
+    width: 22px;
+    height: 22px;
 }
 
 .cancel-modal {
@@ -762,32 +969,31 @@
 }
 
 @media (max-width: 768px) {
-    .reservation-card,
-    .my-reservations-card {
+    .reservation-card {
         padding: 1.5rem;
         margin: 0 1rem;
     }
 
-    .table-wrapper {
-        overflow-x: auto;
+    .my-resv-container {
+        padding: 1rem;
     }
 
-    .reservations-table th,
-    .reservations-table td {
-        padding: 0.7rem 0.85rem;
-        font-size: 0.85rem;
+    .my-resv-row {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "company menu"
+            "date    status"
+            "time    status";
+        gap: 0.75rem 1rem;
     }
 
-    .date-day {
-        display: none;
-    }
+    .my-resv-row-company { grid-area: company; }
+    .my-resv-row-date    { grid-area: date; }
+    .my-resv-row-time    { grid-area: time; }
+    .my-resv-row-status  { grid-area: status; align-self: start; justify-self: end; }
+    .my-resv-row-menu    { grid-area: menu; justify-self: end; }
 
     .cancel-modal-actions {
         flex-direction: column-reverse;
-    }
-
-    .table-toolbar {
-        flex-wrap: wrap;
-        gap: 0.5rem;
     }
 }

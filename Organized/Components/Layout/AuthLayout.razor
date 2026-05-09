@@ -1,9 +1,36 @@
 @inherits LayoutComponentBase
 
-<div class="auth-container">
-    <div class="auth-card">
-        @Body
+<div class="auth">
+    <div class="auth__blob auth__blob--tr"></div>
+    <div class="auth__blob auth__blob--bl"></div>
+
+    <div class="auth__icon auth__icon--lock" aria-hidden="true">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+        </svg>
     </div>
+    <div class="auth__icon auth__icon--calendar" aria-hidden="true">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <path d="M3 9h18"></path>
+            <path d="M8 3v4"></path>
+            <path d="M16 3v4"></path>
+        </svg>
+    </div>
+    <div class="auth__icon auth__icon--bolt" aria-hidden="true">
+        <svg width="48" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"></path>
+        </svg>
+    </div>
+    <div class="auth__icon auth__icon--check" aria-hidden="true">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M8 12.5l3 3 5-6"></path>
+        </svg>
+    </div>
+
+    @Body
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>

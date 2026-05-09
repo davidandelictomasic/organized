@@ -34,6 +34,7 @@ namespace Organized.Application.Reservations
             var reservations = await _unitOfWork.ReservationRepository.GetByUserId(request.UserId);
             var tables = await _unitOfWork.CompanyTableRepository.GetAll();
             var tableDict = tables.ToDictionary(t => t.Id);
+            var today = DateTime.UtcNow.Date;
 
             var response = reservations.Select(r => new ReservationResponse
             {
@@ -43,7 +44,9 @@ namespace Organized.Application.Reservations
                 TableName = tableDict.ContainsKey(r.TableId) ? tableDict[r.TableId].CompanyName : "Unknown",
                 City = tableDict.ContainsKey(r.TableId) ? tableDict[r.TableId].City : "Unknown",
                 ReservationDate = r.ReservationDate,
-                Status = r.Status
+                Status = (r.Status != ReservationStatus.Cancelled && r.ReservationDate.Date < today)
+                    ? ReservationStatus.Completed
+                    : r.Status
             }).ToList();
 
             result.SetResult(response);

@@ -75,29 +75,36 @@
         {
             <div class="modal-overlay" @onclick="CloseModal">
                 <div class="reservation-modal" @onclick:stopPropagation>
-                    <button class="modal-close" @onclick="CloseModal">&times;</button>
-
-                    <h2 class="reservation-modal-title">Reserve Desk @(floorPlanSelectedTableId - 99)</h2>
-
                     <div class="reservation-modal-body">
                         <div class="reservation-modal-map">
                             <div id="preview-floorplan-map"></div>
                         </div>
 
                         <div class="reservation-modal-form">
-                            <p class="reservation-modal-label">Pick a date for your reservation</p>
+                            <div class="reservation-modal-header">
+                                <h2 class="reservation-modal-title">Reserve Desk @(floorPlanSelectedTableId - 99)</h2>
+                                <button class="reservation-modal-close" @onclick="CloseModal" title="Close">&times;</button>
+                            </div>
 
-                            <div class="reservation-modal-calendar">
-                                <DatePicker Value="floorPlanReservationDate"
-                                            ValueChanged="(date) => floorPlanReservationDate = date"
-                                            DisableWeekends="true"
-                                            Inline="true"
-                                            CssClass="inline-datepicker" />
+                            <div class="reservation-modal-content">
+                                <p class="reservation-modal-label">Pick a date for your reservation</p>
+
+                                <div class="reservation-modal-calendar">
+                                    <DatePicker Value="floorPlanReservationDate"
+                                                ValueChanged="(date) => floorPlanReservationDate = date"
+                                                DisableWeekends="true"
+                                                Inline="true"
+                                                CssClass="inline-datepicker" />
+                                </div>
+
+                                <div class="reservation-modal-selected">
+                                    <strong>Selected:</strong> @floorPlanReservationDate.ToString("MMM dd, yyyy")
+                                </div>
                             </div>
 
                             <div class="reservation-modal-actions">
-                                <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
-                                <button class="btn-submit" @onclick="HandleFloorPlanSubmit" disabled="@isSubmitting">
+                                <button class="reservation-modal-cancel" @onclick="CloseModal">Cancel</button>
+                                <button class="reservation-modal-confirm" @onclick="HandleFloorPlanSubmit" disabled="@isSubmitting">
                                     @if (isSubmitting)
                                     {
                                         <span>Creating...</span>
