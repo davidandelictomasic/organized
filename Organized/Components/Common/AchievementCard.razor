@@ -1,6 +1,6 @@
 <div class="achievement-card @(IsCompleted ? "achievement-completed" : "") @(IsHidden && !IsCompleted ? "achievement-hidden" : "")">
     <div class="achievement-icon-wrapper">
-        <div class="achievement-icon @GetIconColorClass()">
+        <div class="achievement-icon">
             <AchievementIcon Name="@(IsHidden && !IsCompleted ? "Hidden" : Name)" />
         </div>
     </div>
@@ -55,30 +55,4 @@
     private int ProgressPercent => MaxProgress > 0
         ? (int)Math.Round((double)Progress / MaxProgress * 100)
         : 0;
-
-    private string GetIconColorClass() => Name switch
-    {
-        "First Reservation" when IsCompleted => "icon-green",
-        "First Reservation" => "icon-teal",
-        "Frequent Visitor" => "icon-orange",
-        "Power User" => "icon-yellow",
-        "Legend" => "icon-purple",
-        "Social Butterfly" => "icon-pink",
-        "Networking Pro" => "icon-red",
-        "LinkedIn IRL" => "icon-amber",
-        "Plans Change" => "icon-orange",
-        "Serial Canceller" => "icon-rose",
-        "Master of Maybe" => "icon-violet",
-        "First Order of Business" => "icon-teal",
-        "Meeting Maker" => "icon-blue",
-        "Calendar Tetris" => "icon-indigo",
-        "Boss of Bosses" => "icon-yellow",
-        "Reschedule Royalty" => "icon-cyan",
-        "Master of Postponement" => "icon-gray",
-        "Popular Demand" => "icon-emerald",
-        "Charisma Maxed" => "icon-red",
-        "Could've Been an Email" => "icon-sky",
-        _ when IsCompleted => "icon-green",
-        _ => "icon-gray"
-    };
 }

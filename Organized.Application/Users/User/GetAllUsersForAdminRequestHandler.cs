@@ -31,6 +31,7 @@ namespace Organized.Application.Users.User
             var users = await _unitOfWork.UserRepository.GetAll();
 
             var response = users
+                .Where(u => u.Role != UserRole.Admin)
                 .Select(u => new AdminUserListItemResponse
                 {
                     Id = u.Id,

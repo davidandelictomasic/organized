@@ -64,7 +64,7 @@ window.ReservationsFloorPlan = {
 
         const marker = L.marker([y, x]).addTo(reservationsMap);
 
-        marker.bindPopup(`<b>${label}</b><br>Table #${tableId}<br>Click to reserve`);
+        marker.bindPopup(`<b>${label}</b><br>Table #${tableId}<br>Click to reserve`, { closeButton: false });
 
         marker.on('mouseover', function () {
             this.openPopup();
@@ -110,8 +110,12 @@ window.ReservationsFloorPlan = {
 
     previewMap: null,
     previewMarkers: [],
+    previewMarkerData: null,
+    previewSelectedTableId: 0,
+    previewDotNetRef: null,
 
-    initializePreview: function (containerId, imageUrl, imgWidth, imgHeight, markerData, selectedTableId) {
+    initializePreview: function (containerId, imageUrl, imgWidth, imgHeight, markerData, selectedTableId, dotNetHelper) {
+        this.previewDotNetRef = dotNetHelper || null;
         if (this.previewMap) {
             this.previewMap.remove();
             this.previewMap = null;
@@ -139,34 +143,12 @@ window.ReservationsFloorPlan = {
         L.imageOverlay(imageUrl, bounds, { interactive: false }).addTo(this.previewMap);
         this.previewMap.fitBounds(bounds);
 
-        if (markerData && markerData.length > 0) {
-            markerData.forEach(function (m) {
-                var isSelected = m.tableId === selectedTableId;
-                var label = m.label || ('Desk ' + m.tableId);
-                var iconText = m.label === 'Meeting Room' ? 'M' : m.tableId;
+        this.previewMarkerData = markerData || [];
+        this.previewSelectedTableId = selectedTableId;
 
-                var icon = L.divIcon({
-                    className: 'preview-marker-icon',
-                    html: '<div class="preview-marker ' + (isSelected ? 'preview-marker-selected' : '') + '">' +
-                          '<span>' + iconText + '</span></div>',
-                    iconSize: [isSelected ? 36 : 28, isSelected ? 36 : 28],
-                    iconAnchor: [isSelected ? 18 : 14, isSelected ? 18 : 14]
-                });
+        this._renderPreviewMarkers({}, 0);
 
-                var marker = L.marker([m.y, m.x], { icon: icon, interactive: true }).addTo(this.previewMap);
-                var popupText = isSelected
-                    ? '<b>' + label + '</b><br><span style="color:#667eea;">You will be here</span>'
-                    : '<b>' + label + '</b>';
-                marker.bindPopup(popupText);
-
-                marker.on('mouseover', function () { this.openPopup(); });
-                marker.on('mouseout', function () { this.closePopup(); });
-
-                this.previewMarkers.push(marker);
-            }.bind(this));
-        }
-
-        var selected = markerData.find(function (m) { return m.tableId === selectedTableId; });
+        var selected = (markerData || []).find(function (m) { return m.tableId === selectedTableId; });
         if (selected) {
             this.previewMap.setView([selected.y, selected.x], 0);
         }
@@ -174,11 +156,90 @@ window.ReservationsFloorPlan = {
         return true;
     },
 
+    updatePreviewOccupants: function (occupants, currentUserId, selectedTableId) {
+        if (!this.previewMap) return false;
+        if (selectedTableId) this.previewSelectedTableId = selectedTableId;
+
+        var occupantsByTable = {};
+        (occupants || []).forEach(function (o) {
+            occupantsByTable[o.tableId] = o;
+        });
+
+        this._renderPreviewMarkers(occupantsByTable, currentUserId);
+        return true;
+    },
+
+    _renderPreviewMarkers: function (occupantsByTable, currentUserId) {
+        var self = this;
+
+        this.previewMarkers.forEach(function (m) { self.previewMap.removeLayer(m); });
+        this.previewMarkers = [];
+
+        if (!this.previewMarkerData) return;
+
+        this.previewMarkerData.forEach(function (m) {
+            var isSelected = m.tableId === self.previewSelectedTableId;
+            var label = m.label || ('Desk ' + m.tableId);
+            var occupant = occupantsByTable[m.tableId];
+
+            var iconHtml, popupText, size, isClickable;
+
+            if (isSelected) {
+                iconHtml = '<div class="preview-marker preview-marker-selected"><span>' + m.tableId + '</span></div>';
+                popupText = '<b>' + label + '</b><br><span class="preview-popup-self">You will be here</span>';
+                size = 36;
+                isClickable = false;
+            } else if (occupant) {
+                var isSelf = occupant.userId === currentUserId;
+                iconHtml = '<div class="preview-marker preview-marker-booked' + (isSelf ? ' preview-marker-self' : '') + '"><span>' + escapeHtml(occupant.initials || '?') + '</span></div>';
+                popupText = '<b>' + label + '</b><br>Reserved by <b>' + escapeHtml(occupant.userName || 'Unknown') + '</b>';
+                size = 32;
+                isClickable = false;
+            } else {
+                iconHtml = '<div class="preview-marker preview-marker-available preview-marker-clickable"><span>' + m.tableId + '</span></div>';
+                popupText = '<b>' + label + '</b><br><span class="preview-popup-available">Available — click to switch</span>';
+                size = 28;
+                isClickable = true;
+            }
+
+            var icon = L.divIcon({
+                className: 'preview-marker-icon',
+                html: iconHtml,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2]
+            });
+
+            var marker = L.marker([m.y, m.x], { icon: icon, interactive: true }).addTo(self.previewMap);
+            marker.bindPopup(popupText, { closeButton: false });
+            marker.on('mouseover', function () { this.openPopup(); });
+            marker.on('mouseout', function () { this.closePopup(); });
+
+            if (isClickable && self.previewDotNetRef) {
+                (function (clickedId) {
+                    marker.on('click', function () {
+                        self.previewDotNetRef.invokeMethodAsync('OnPreviewMarkerClicked', clickedId);
+                    });
+                })(m.tableId);
+            }
+
+            self.previewMarkers.push(marker);
+        });
+    },
+
     disposePreview: function () {
         if (this.previewMap) {
             this.previewMap.remove();
             this.previewMap = null;
             this.previewMarkers = [];
+            this.previewMarkerData = null;
+            this.previewSelectedTableId = 0;
+            this.previewDotNetRef = null;
         }
     }
 };
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+}

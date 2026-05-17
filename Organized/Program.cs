@@ -29,6 +29,8 @@ builder.Services.AddScoped<GetAllTablesRequestHandler>();
 builder.Services.AddScoped<CreateReservationRequestHandler>();
 builder.Services.AddScoped<GetUserReservationsRequestHandler>();
 builder.Services.AddScoped<CancelReservationRequestHandler>();
+builder.Services.AddScoped<GetReservedDatesForTableRequestHandler>();
+builder.Services.AddScoped<GetReservationsByDateRequestHandler>();
 
 builder.Services.AddScoped<GetUserAchievementsRequestHandler>();
 builder.Services.AddScoped<AchievementTracker>();

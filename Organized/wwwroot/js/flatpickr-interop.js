@@ -49,6 +49,21 @@ window.FlatpickrInterop = {
         }
     },
 
+    setDisabledDates: function (elementId, disabledDates, disableWeekends) {
+        var instance = this.instances[elementId];
+        if (!instance) return;
+
+        var disable = [];
+        if (disableWeekends) {
+            disable.push(function (date) {
+                return date.getDay() === 0 || date.getDay() === 6;
+            });
+        }
+        (disabledDates || []).forEach(function (d) { disable.push(d); });
+
+        instance.set('disable', disable);
+    },
+
     destroy: function (elementId) {
         if (this.instances[elementId]) {
             this.instances[elementId].destroy();

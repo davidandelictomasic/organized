@@ -5,6 +5,8 @@
 @using Organized.Services
 @inject CreateReservationRequestHandler CreateReservationHandler
 @inject GetAllTablesRequestHandler GetTablesHandler
+@inject GetReservedDatesForTableRequestHandler GetReservedDatesHandler
+@inject GetReservationsByDateRequestHandler GetReservationsByDateHandler
 @inject UserStateService UserState
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -53,17 +55,30 @@
                             <div class="reservation-modal-content">
                                 <p class="reservation-modal-label">Pick a date for your reservation</p>
 
+                                <div class="reservation-modal-selected">
+                                    <strong>Selected:</strong> @floorPlanReservationDate.ToString("MMM dd, yyyy")
+                                </div>
+
                                 <div class="reservation-modal-calendar">
                                     <DatePicker Value="floorPlanReservationDate"
-                                                ValueChanged="(date) => floorPlanReservationDate = date"
+                                                ValueChanged="HandleDateChanged"
                                                 DisableWeekends="true"
+                                                DisabledDates="reservedDatesForSelectedTable"
                                                 Inline="true"
                                                 CssClass="inline-datepicker" />
                                 </div>
 
-                                <div class="reservation-modal-selected">
-                                    <strong>Selected:</strong> @floorPlanReservationDate.ToString("MMM dd, yyyy")
-                                </div>
+                                @if (!string.IsNullOrEmpty(message) && !isSuccess)
+                                {
+                                    <div class="reservation-modal-error" role="alert">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="13"></line>
+                                            <circle cx="12" cy="16.5" r="0.6" fill="currentColor"></circle>
+                                        </svg>
+                                        <span>@message</span>
+                                    </div>
+                                }
                             </div>
 
                             <div class="reservation-modal-actions">
@@ -99,6 +114,7 @@
     private bool isSubmitting = false;
     private DotNetObjectReference<Reservations>? dotNetRef;
     private bool mapInitialized = false;
+    private List<string>? reservedDatesForSelectedTable;
 
     private const int ImageWidth = 3000;
     private const int ImageHeight = 2500;
@@ -111,11 +127,32 @@
         new TablePosition { TableId = 4, X = 542, Y = 1175 },
         new TablePosition { TableId = 5, X = 644.25, Y = 1150.5 },
         new TablePosition { TableId = 6, X = 798, Y = 1149 },
-        new TablePosition { TableId = 11, X = 349, Y = 472, IsMeetingRoom = true },
-        new TablePosition { TableId = 12, X = 590, Y = 790 },
-        new TablePosition { TableId = 13, X = 655, Y = 788 },
-        new TablePosition { TableId = 14, X = 655, Y = 831 },
-        new TablePosition { TableId = 15, X = 591, Y = 831 },
+        new TablePosition { TableId = 16, X = 1107.3, Y = 808.4 },
+        new TablePosition { TableId = 17, X = 1106.8, Y = 898.9 },
+        new TablePosition { TableId = 18, X = 1227.3, Y = 897.4 },
+        new TablePosition { TableId = 19, X = 1226.8, Y = 803.9 },
+        new TablePosition { TableId = 20, X = 1329.3, Y = 1019.9 },
+        new TablePosition { TableId = 21, X = 1450.8, Y = 1019.4 },
+        new TablePosition { TableId = 22, X = 1329.8, Y = 897.9 },
+        new TablePosition { TableId = 23, X = 1450.3, Y = 898.4 },
+        new TablePosition { TableId = 24, X = 1547.9, Y = 933.7 },
+        new TablePosition { TableId = 25, X = 1672.1, Y = 932.9 },
+        new TablePosition { TableId = 26, X = 1678.4, Y = 1119.7 },
+        new TablePosition { TableId = 27, X = 1831.9, Y = 932.2 },
+        new TablePosition { TableId = 28, X = 1654.4, Y = 1236.2 },
+        new TablePosition { TableId = 29, X = 1895.4, Y = 1053.9 },
+        new TablePosition { TableId = 30, X = 1774.6, Y = 1056.4 },
+        new TablePosition { TableId = 31, X = 1995.6, Y = 975.7 },
+        new TablePosition { TableId = 32, X = 1994.9, Y = 1064.7 },
+        new TablePosition { TableId = 33, X = 2116.4, Y = 1062.9 },
+        new TablePosition { TableId = 34, X = 2115.6, Y = 975.9 },
+        new TablePosition { TableId = 35, X = 2204.9, Y = 1029.9 },
+        new TablePosition { TableId = 36, X = 2325.4, Y = 1029.9 },
+        new TablePosition { TableId = 37, X = 2262.4, Y = 887.4 },
+        new TablePosition { TableId = 38, X = 2496.6, Y = 820.2 },
+        new TablePosition { TableId = 39, X = 2612.4, Y = 860.9 },
+        new TablePosition { TableId = 40, X = 2424.4, Y = 939.7 },
+        new TablePosition { TableId = 41, X = 2612.4, Y = 1014.7 },
     };
 
     private string SelectedTableLabel
@@ -185,8 +222,17 @@
     {
         floorPlanSelectedTableId = tableId;
         floorPlanSelectedTable = tables?.FirstOrDefault(t => t.Id == tableId);
-        showDatePicker = true;
         message = null;
+
+        var datesResult = await GetReservedDatesHandler.ProcessActiveRequestAsnync(
+            new GetReservedDatesForTableRequest { TableId = tableId });
+        reservedDatesForSelectedTable = (datesResult.Value ?? new List<DateTime>())
+            .Select(d => d.ToString("yyyy-MM-dd"))
+            .ToList();
+
+        floorPlanReservationDate = NextAvailableDate(DateTime.Today, datesResult.Value ?? new List<DateTime>());
+
+        showDatePicker = true;
 
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.highlightMarker", tableId);
 
@@ -195,7 +241,87 @@
         await Task.Delay(100);
         var markerData = tablePositions.Select(p => new { tableId = p.TableId, x = p.X, y = p.Y, label = p.Label }).ToArray();
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.initializePreview",
-            "preview-floorplan-map", "groundplan.jpg", ImageWidth, ImageHeight, markerData, tableId);
+            "preview-floorplan-map", "groundplan.jpg", ImageWidth, ImageHeight, markerData, tableId, dotNetRef);
+
+        await LoadOccupantsForDate(floorPlanReservationDate);
+    }
+
+    [JSInvokable]
+    public async Task OnPreviewMarkerClicked(int tableId)
+    {
+        if (tableId == floorPlanSelectedTableId) return;
+
+        floorPlanSelectedTableId = tableId;
+        floorPlanSelectedTable = tables?.FirstOrDefault(t => t.Id == tableId);
+
+        var datesResult = await GetReservedDatesHandler.ProcessActiveRequestAsnync(
+            new GetReservedDatesForTableRequest { TableId = tableId });
+        var blocked = datesResult.Value ?? new List<DateTime>();
+        reservedDatesForSelectedTable = blocked
+            .Select(d => d.ToString("yyyy-MM-dd"))
+            .ToList();
+
+        if (blocked.Any(d => d.Date == floorPlanReservationDate.Date))
+        {
+            message = $"{SelectedTableLabel} is reserved on {floorPlanReservationDate:MMM dd, yyyy}. Pick a different date.";
+            isSuccess = false;
+        }
+        else
+        {
+            message = null;
+        }
+
+        StateHasChanged();
+
+        await LoadOccupantsForDate(floorPlanReservationDate);
+    }
+
+    private async Task HandleDateChanged(DateTime date)
+    {
+        floorPlanReservationDate = date;
+        message = null;
+        await LoadOccupantsForDate(date);
+    }
+
+    private async Task LoadOccupantsForDate(DateTime date)
+    {
+        var result = await GetReservationsByDateHandler.ProcessActiveRequestAsnync(
+            new GetReservationsByDateRequest { Date = date });
+        var occupants = (result.Value ?? new List<ReservationOccupantResponse>())
+            .Select(o => new
+            {
+                tableId = o.TableId,
+                userId = o.UserId,
+                userName = o.UserName,
+                initials = GetInitials(o.UserName)
+            })
+            .ToArray();
+
+        await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.updatePreviewOccupants",
+            occupants, UserState.UserId ?? 0, floorPlanSelectedTableId);
+    }
+
+    private static DateTime NextAvailableDate(DateTime start, List<DateTime> blocked)
+    {
+        var blockedSet = new HashSet<DateTime>(blocked.Select(d => d.Date));
+        var candidate = start.Date;
+        for (int i = 0; i < 365; i++)
+        {
+            var isWeekend = candidate.DayOfWeek == DayOfWeek.Saturday || candidate.DayOfWeek == DayOfWeek.Sunday;
+            if (!isWeekend && !blockedSet.Contains(candidate)) return candidate;
+            candidate = candidate.AddDays(1);
+        }
+        return start.Date;
+    }
+
+    private static string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2) return $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[^1][0])}";
+        return parts[0].Length >= 2
+            ? $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[0][1])}"
+            : parts[0][0].ToString().ToUpper();
     }
 
     private async Task CloseModal()
@@ -205,6 +331,7 @@
         showDatePicker = false;
         floorPlanSelectedTableId = 0;
         floorPlanSelectedTable = null;
+        reservedDatesForSelectedTable = null;
 
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.clearHighlights");
     }
@@ -247,7 +374,7 @@
             }
             else
             {
-                message = "Failed to create reservation.";
+                message = result.Value?.Message ?? "Failed to create reservation.";
                 isSuccess = false;
             }
         }

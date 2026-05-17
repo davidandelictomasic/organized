@@ -164,8 +164,8 @@ h1:focus {
 
 .flatpickr-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    border-color: #4858ff;
+    box-shadow: 0 0 0 3px rgba(72, 88, 255, 0.15);
     background: #fff;
 }
 
@@ -183,7 +183,7 @@ input.flatpickr-input[readonly] {
 }
 
 .flatpickr-months .flatpickr-month {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
     color: #fff;
     border-radius: 12px 12px 0 0;
 }
@@ -260,7 +260,7 @@ input.flatpickr-input[readonly] {
 }
 
 span.flatpickr-weekday {
-    color: #667eea;
+    color: #4858ff;
     font-weight: 600;
     font-size: 0.85rem;
 }
@@ -271,23 +271,23 @@ span.flatpickr-weekday {
 }
 
 .flatpickr-day:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(72, 88, 255, 0.1);
     border-color: transparent;
 }
 
 .flatpickr-day.selected,
 .flatpickr-day.selected:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
     border-color: transparent;
 }
 
 .flatpickr-day.today {
-    border-color: #667eea;
+    border-color: #4858ff;
 }
 
 .flatpickr-day.today:hover {
-    background: rgba(102, 126, 234, 0.1);
-    border-color: #667eea;
+    background: rgba(72, 88, 255, 0.1);
+    border-color: #4858ff;
 }
 
 .flatpickr-day.flatpickr-disabled,
@@ -315,7 +315,7 @@ span.flatpickr-weekday {
 }
 
 .navbar-logo-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
 }
 
 .navbar-brand {
@@ -327,7 +327,7 @@ span.flatpickr-weekday {
 }
 
 .navbar-link:hover {
-    color: #667eea !important;
+    color: #4858ff !important;
 }
 
 .navbar-email {
@@ -343,20 +343,25 @@ span.flatpickr-weekday {
 }
 
 .navbar-btn-signout {
-    background: #dc2626;
+    background: #ffffff !important;
+    color: #ef4444 !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.32);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .navbar-btn-signout:hover {
-    background: #b91c1c;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    background: #fef2f2 !important;
+    border-color: rgba(239, 68, 68, 0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
 }
 
 .navbar-btn-ghost {
-    color: #667eea;
+    color: #4858ff;
 }
 
 .navbar-btn-ghost:hover {
-    background: rgba(102, 126, 234, 0.08);
+    background: rgba(72, 88, 255, 0.08);
 }
 
 /* ============ Home Hero ============ */
@@ -732,7 +737,7 @@ span.flatpickr-weekday {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
 }
 
 .footer-brand-text {
@@ -770,7 +775,7 @@ span.flatpickr-weekday {
 }
 
 .footer-links a:hover {
-    color: #667eea !important;
+    color: #4858ff !important;
 }
 
 .footer-cta-text {
@@ -796,12 +801,17 @@ span.flatpickr-weekday {
 }
 
 .footer-cta-btn-signout {
-    background: #dc2626;
+    background: #ffffff !important;
+    color: #ef4444 !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.32);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .footer-cta-btn-signout:hover {
-    background: #b91c1c;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    background: #fef2f2 !important;
+    border-color: rgba(239, 68, 68, 0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
 }
 
 .footer-links-two-col {

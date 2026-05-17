@@ -29,12 +29,35 @@ else
     [Parameter] public string Placeholder { get; set; } = "Select a date";
     [Parameter] public bool Inline { get; set; } = false;
 
+    private List<string>? _appliedDisabledDates;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await InitializePicker();
+            _appliedDisabledDates = DisabledDates;
+            return;
         }
+
+        if (_initialized && !SameDates(DisabledDates, _appliedDisabledDates))
+        {
+            await JSRuntime.InvokeVoidAsync("FlatpickrInterop.setDisabledDates",
+                _elementId, DisabledDates ?? new List<string>(), DisableWeekends);
+            _appliedDisabledDates = DisabledDates;
+        }
+    }
+
+    private static bool SameDates(List<string>? a, List<string>? b)
+    {
+        if (ReferenceEquals(a, b)) return true;
+        if (a == null || b == null) return false;
+        if (a.Count != b.Count) return false;
+        for (int i = 0; i < a.Count; i++)
+        {
+            if (a[i] != b[i]) return false;
+        }
+        return true;
     }
 
     private async Task InitializePicker()

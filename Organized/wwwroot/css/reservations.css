@@ -224,6 +224,7 @@
     padding: 0.75rem 1rem;
     color: #1e40af;
     font-size: 0.9rem;
+    margin-bottom: 1rem;
 }
 
 .reservation-modal-selected strong {
@@ -231,13 +232,84 @@
     color: #1e3a8a;
 }
 
-.inline-datepicker .flatpickr-calendar {
+.reservation-modal-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fef2f2;
+    border: 1px solid rgba(239, 68, 68, 0.28);
+    border-radius: 10px;
+    color: #991b1b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.reservation-modal-error svg {
+    color: #ef4444;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Hide the empty input Flatpickr inserts — try every place it might end up */
+.reservation-modal-calendar input.flatpickr-input,
+.reservation-modal-calendar input.flatpickr-mobile,
+.reservation-modal-calendar > input,
+.inline-datepicker + input.flatpickr-input,
+.inline-datepicker ~ input.flatpickr-input {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+}
+
+/* If the host div ends up empty (calendar rendered elsewhere), collapse it */
+.inline-datepicker:empty {
+    display: none !important;
+}
+
+/* Calendar — make it span the modal column */
+.reservation-modal-calendar .flatpickr-calendar {
     box-shadow: none;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     padding: 0.5rem;
+}
+
+.reservation-modal-calendar .flatpickr-days,
+.reservation-modal-calendar .flatpickr-rContainer,
+.reservation-modal-calendar .dayContainer {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+.reservation-modal-calendar .dayContainer {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.reservation-modal-calendar .flatpickr-weekdays,
+.reservation-modal-calendar .flatpickr-weekdaycontainer {
+    width: 100% !important;
+}
+
+.reservation-modal-calendar .flatpickr-weekdaycontainer {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.reservation-modal-calendar .flatpickr-day,
+.reservation-modal-calendar .flatpickr-weekday {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    flex: none !important;
 }
 
 .reservation-modal-actions {
@@ -249,40 +321,109 @@
 
 .reservation-modal-cancel,
 .reservation-modal-confirm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 0.85rem 1.5rem;
     font-size: 0.95rem;
-    font-weight: 600;
-    border-radius: 8px;
+    font-weight: 700;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .reservation-modal-cancel {
     flex: 1;
-    background: white;
-    color: #475569;
-    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #ef4444;
+    border: 1.5px solid rgba(239, 68, 68, 0.32);
 }
 
 .reservation-modal-cancel:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.55);
+    transform: translateY(-1px);
 }
 
 .reservation-modal-confirm {
     flex: 1.6;
-    background: #2563eb;
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
+    color: #fff;
+    border: 0;
+    box-shadow: 0 8px 18px rgba(72, 88, 255, 0.32);
 }
 
 .reservation-modal-confirm:hover:not(:disabled) {
-    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(122, 63, 240, 0.38);
 }
 
 .reservation-modal-confirm:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 10px rgba(72, 88, 255, 0.18);
+}
+
+/* ---------- Flatpickr theming in the modal ---------- */
+.reservation-modal-calendar .flatpickr-months,
+.reservation-modal-calendar .flatpickr-month,
+.reservation-modal-calendar .flatpickr-current-month {
+    background: #fff;
+}
+
+.reservation-modal-calendar .flatpickr-month,
+.reservation-modal-calendar .flatpickr-current-month,
+.reservation-modal-calendar .flatpickr-current-month input.cur-year,
+.reservation-modal-calendar .flatpickr-monthDropdown-months,
+.reservation-modal-calendar .flatpickr-current-month .cur-month {
+    color: #0f172a !important;
+    fill: #0f172a !important;
+}
+
+.reservation-modal-calendar .flatpickr-prev-month,
+.reservation-modal-calendar .flatpickr-next-month {
+    color: #0f172a !important;
+    fill: #0f172a !important;
+}
+
+.reservation-modal-calendar .flatpickr-prev-month svg,
+.reservation-modal-calendar .flatpickr-next-month svg {
+    fill: #0f172a !important;
+}
+
+.reservation-modal-calendar .flatpickr-prev-month:hover,
+.reservation-modal-calendar .flatpickr-next-month:hover {
+    background: #f1f5f9;
+}
+
+.reservation-modal-calendar .flatpickr-weekday {
+    color: #4858ff !important;
+    font-weight: 700;
+}
+
+.reservation-modal-calendar .flatpickr-day.selected,
+.reservation-modal-calendar .flatpickr-day.selected:hover,
+.reservation-modal-calendar .flatpickr-day.startRange,
+.reservation-modal-calendar .flatpickr-day.endRange {
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(72, 88, 255, 0.32);
+}
+
+.reservation-modal-calendar .flatpickr-day.today {
+    border-color: rgba(72, 88, 255, 0.5);
+}
+
+.reservation-modal-calendar .flatpickr-day:hover:not(.flatpickr-disabled):not(.selected) {
+    background: rgba(72, 88, 255, 0.08);
+    border-color: transparent;
+}
+
+.reservation-modal-calendar .numInputWrapper:hover {
+    background: rgba(255, 255, 255, 0.14);
 }
 
 .preview-marker-icon {
@@ -293,7 +434,7 @@
 .preview-marker {
     width: 28px;
     height: 28px;
-    background: #667eea;
+    background: #94a3b8;
     border: 2px solid #fff;
     border-radius: 50%;
     display: flex;
@@ -311,16 +452,55 @@
 .preview-marker-selected {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
     border: 3px solid #fff;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 3px rgba(72, 88, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25);
     animation: pulseMarker 2s ease-in-out infinite;
 }
 
 @keyframes pulseMarker {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3); }
-    50% { box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3); }
+    0%, 100% { box-shadow: 0 0 0 3px rgba(72, 88, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25); }
+    50%      { box-shadow: 0 0 0 6px rgba(72, 88, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.25); }
 }
+
+.preview-marker-available {
+    background: #cbd5e1;
+}
+
+.preview-marker-available span {
+    color: #475569;
+}
+
+.preview-marker-clickable {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.preview-marker-clickable:hover {
+    transform: scale(1.18);
+    box-shadow: 0 0 0 3px rgba(72, 88, 255, 0.28);
+}
+
+.preview-marker-booked {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
+    border: 2px solid #fff;
+    box-shadow: 0 4px 10px rgba(72, 88, 255, 0.32);
+}
+
+.preview-marker-booked span {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+.preview-marker-self {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35), 0 4px 10px rgba(217, 119, 6, 0.4);
+}
+
+.preview-popup-self { color: #7a3ff0; font-weight: 700; }
+.preview-popup-available { color: #10b981; font-weight: 700; }
 
 @media (max-width: 768px) {
     .reservation-modal {
@@ -561,8 +741,7 @@
 
 .my-resv-page {
     padding-top: 6rem;
-    min-height: 100vh;
-    background: #f5f7fa;
+    background: #ffffff;
 }
 
 .my-resv-container {
@@ -697,19 +876,22 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.65rem 1.25rem;
-    background: #2563eb;
+    background: linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
+    box-shadow: 0 8px 18px rgba(72, 88, 255, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     transition: background 0.2s ease;
 }
 
 .my-resv-new-btn:hover {
-    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(122, 63, 240, 0.36);
     color: white;
 }
 
@@ -721,19 +903,25 @@
 
 .my-resv-row {
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 16px;
     padding: 1rem 1.25rem;
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.7fr) auto auto;
     align-items: center;
     gap: 1.25rem;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .my-resv-row:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(72, 88, 255, 0.10);
+    border-color: rgba(72, 88, 255, 0.18);
+}
+
+.my-resv-row:has(.my-resv-row-menu.is-open):hover {
+    transform: none;
 }
 
 .my-resv-row-company {
@@ -741,18 +929,6 @@
     align-items: center;
     gap: 0.85rem;
     min-width: 0;
-}
-
-.my-resv-row-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #dbeafe;
-    color: #2563eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
 }
 
 .my-resv-row-company-text {

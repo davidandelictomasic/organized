@@ -61,9 +61,6 @@
                     {
                         <div class="my-resv-row" @key="reservation.Id">
                             <div class="my-resv-row-company">
-                                <div class="my-resv-row-avatar">
-                                    <BuildingOfficeIcon CssClass="my-resv-icon-md" />
-                                </div>
                                 <div class="my-resv-row-company-text">
                                     <div class="my-resv-row-name">@reservation.TableName</div>
                                     <div class="my-resv-row-city">
@@ -102,7 +99,6 @@
                                 @if (openMenuReservationId == reservation.Id)
                                 {
                                     <div class="my-resv-menu" @onclick:stopPropagation="true">
-                                        <button class="my-resv-menu-item" @onclick="() => HandleModify(reservation)">Modify</button>
                                         <button class="my-resv-menu-item my-resv-menu-item-danger" @onclick="() => ShowCancelModal(reservation)">Cancel Reservation</button>
                                     </div>
                                 }
@@ -217,11 +213,6 @@
     private void CloseMenu()
     {
         openMenuReservationId = null;
-    }
-
-    private void HandleModify(ReservationResponse reservation)
-    {
-        CloseMenu();
     }
 
     private void ShowCancelModal(ReservationResponse reservation)

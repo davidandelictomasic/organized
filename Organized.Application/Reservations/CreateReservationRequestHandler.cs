@@ -58,6 +58,18 @@ namespace Organized.Application.Reservations
                 return result;
             }
 
+            var requestedDate = request.ReservationDate.Date;
+            var userReservations = await _unitOfWork.ReservationRepository.GetByUserId(request.UserId);
+            var alreadyBooked = userReservations.Any(r =>
+                r.Status != ReservationStatus.Cancelled &&
+                r.ReservationDate.Date == requestedDate);
+
+            if (alreadyBooked)
+            {
+                result.SetResult(new CreateReservationResponse(null, false, "You already have a reservation for this day. Cancel it first to book a different table."));
+                return result;
+            }
+
             var reservation = new Reservation
             {
                 UserId = request.UserId,
