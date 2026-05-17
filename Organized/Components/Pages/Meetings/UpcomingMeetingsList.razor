@@ -1,0 +1,49 @@
+@using Organized.Application.Meetings
+
+<div class="muser-section">
+    <div class="muser-section__head">
+        <h2 class="muser-section__title">
+            <span class="muser-section__icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                    <path d="M8 3v4"></path>
+                    <path d="M16 3v4"></path>
+                    <polyline points="8 14 11 17 16 12"></polyline>
+                </svg>
+            </span>
+            Upcoming Meetings
+        </h2>
+        <span class="muser-section__count"><b>@(Upcoming?.Count ?? 0)</b> on your calendar</span>
+    </div>
+
+    @if (Upcoming == null)
+    {
+        <div class="muser-empty">Loading…</div>
+    }
+    else if (Upcoming.Count == 0)
+    {
+        <div class="muser-empty">
+            <div class="muser-empty__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                </svg>
+            </div>
+            No upcoming meetings.
+        </div>
+    }
+    else
+    {
+        <div class="muser-list">
+            @foreach (var u in Upcoming)
+            {
+                <UpcomingMeetingCard Meeting="u" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<UpcomingMeetingResponse>? Upcoming { get; set; }
+}

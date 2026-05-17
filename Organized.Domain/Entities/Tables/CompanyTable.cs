@@ -5,5 +5,7 @@ namespace Organized.Domain.Entities.Tables
         public int Id { get; set; }
         public string CompanyName { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
+        public bool IsMeetingRoom { get; set; }
+        public int Capacity { get; set; } = 1;
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Organized.Domain.Persistence.Achievements;
 using Organized.Domain.Persistence.Common;
 using Organized.Domain.Persistence.Friends;
+using Organized.Domain.Persistence.Meetings;
 using Organized.Domain.Persistence.Reservations;
 using Organized.Domain.Persistence.Tables;
 using Organized.Domain.Persistence.Users;
@@ -28,6 +29,9 @@ namespace Organized.Infrastructure.Persistence.Common
         public IFriendshipRepository FriendshipRepository { get; }
         public IFriendRequestRepository FriendRequestRepository { get; }
 
+        public IMeetingRepository MeetingRepository { get; }
+        public IMeetingInviteRepository MeetingInviteRepository { get; }
+
         public UnitOfWork(
             ApplicationDbContext dbContext,
             IUserRepository userRepository,
@@ -36,7 +40,9 @@ namespace Organized.Infrastructure.Persistence.Common
             IAchievementRepository achievementRepository,
             IUserAchievementRepository userAchievementRepository,
             IFriendshipRepository friendshipRepository,
-            IFriendRequestRepository friendRequestRepository)
+            IFriendRequestRepository friendRequestRepository,
+            IMeetingRepository meetingRepository,
+            IMeetingInviteRepository meetingInviteRepository)
         {
             _dbContext = dbContext;
             UserRepository = userRepository;
@@ -46,6 +52,8 @@ namespace Organized.Infrastructure.Persistence.Common
             UserAchievementRepository = userAchievementRepository;
             FriendshipRepository = friendshipRepository;
             FriendRequestRepository = friendRequestRepository;
+            MeetingRepository = meetingRepository;
+            MeetingInviteRepository = meetingInviteRepository;
         }
 
         public async Task CreateTransaction()

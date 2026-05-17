@@ -1,0 +1,297 @@
+@page "/profile"
+@layout HomeLayout
+@using Organized.Application.Users.User
+@using Organized.Application.Friends
+@using Organized.Application.Achievements
+@using Organized.Application.Reservations
+@using Organized.Application.Meetings
+@using Organized.Components.Pages.Friends
+@using Organized.Domain.Enums
+@using Organized.Services
+@inject GetUserProfileRequestHandler GetProfileHandler
+@inject UpdateUserDisplayNameRequestHandler UpdateNameHandler
+@inject GetUserFriendsRequestHandler GetFriendsHandler
+@inject GetUserAchievementsRequestHandler GetAchievementsHandler
+@inject GetUserReservationsRequestHandler GetReservationsHandler
+@inject GetUserUpcomingMeetingsRequestHandler GetUpcomingMeetingsHandler
+@inject GetMeetingsCreatedByAdminRequestHandler GetAdminMeetingsHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<PageTitle>Profile - Organized</PageTitle>
+
+<div class="profile-page">
+    <h1 class="prof-title">Profile</h1>
+
+    @if (profile == null)
+    {
+        <div class="prof-loading">Loading...</div>
+    }
+    else if (!profile.Found)
+    {
+        <div class="prof-loading">Profile not found.</div>
+    }
+    else
+    {
+        <div class="prof-identity">
+            <div class="prof-identity__banner">
+                <div class="prof-identity__blob prof-identity__blob--a"></div>
+                <div class="prof-identity__blob prof-identity__blob--b"></div>
+            </div>
+            <div class="prof-identity__body">
+                <div class="prof-identity__avatar">@FriendStatus.GetInitials(profile.Name)</div>
+                <div class="prof-identity__main">
+                    <div class="prof-identity__name">
+                        <h2>@profile.Name</h2>
+                    </div>
+                    <div class="prof-identity__email">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                            <path d="M3 7l9 6 9-6"></path>
+                        </svg>
+                        @profile.Email
+                    </div>
+                </div>
+            </div>
+
+            <div class="prof-info-grid">
+                <div class="prof-info">
+                    <div class="prof-info__label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="3.6"></circle>
+                            <path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"></path>
+                        </svg>
+                        Display name
+                    </div>
+                    <div class="prof-info__value">@profile.Name</div>
+                </div>
+                <div class="prof-info">
+                    <div class="prof-info__label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                            <path d="M3 7l9 6 9-6"></path>
+                        </svg>
+                        Email
+                    </div>
+                    <div class="prof-info__value">@profile.Email</div>
+                </div>
+                <div class="prof-info">
+                    <div class="prof-info__label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2l2.6 6.2 6.7.6-5.1 4.5 1.6 6.7L12 16.8 6.2 20l1.6-6.7L2.7 8.8l6.7-.6L12 2z"></path>
+                        </svg>
+                        Role
+                    </div>
+                    <div class="prof-info__value">@profile.Role</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prof-stats">
+            @if (profile.Role == UserRole.Admin)
+            {
+                <div class="prof-stat">
+                    <div class="prof-stat__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="8" r="3.2"></circle>
+                            <circle cx="16.5" cy="9" r="2.4"></circle>
+                            <path d="M3.5 19c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5"></path>
+                            <path d="M14.5 19c0-2 1.6-3.6 3.6-3.6s3.4 1.6 3.4 3.6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="prof-stat__value">@meetingsCount</div>
+                        <div class="prof-stat__label">Meetings</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="prof-stat">
+                    <div class="prof-stat__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                            <path d="M3 9h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="prof-stat__value">@reservationsCount</div>
+                        <div class="prof-stat__label">Reservations</div>
+                    </div>
+                </div>
+            }
+
+            <div class="prof-stat">
+                <div class="prof-stat__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l2.6 6.2 6.7.6-5.1 4.5 1.6 6.7L12 16.8 6.2 20l1.6-6.7L2.7 8.8l6.7-.6L12 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="prof-stat__value">@achievementsCount</div>
+                    <div class="prof-stat__label">Achievements</div>
+                </div>
+            </div>
+
+            <div class="prof-stat">
+                <div class="prof-stat__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="11" r="3.5"></circle>
+                        <path d="M2.5 20c0-3 2.9-5.4 6.5-5.4s6.5 2.4 6.5 5.4"></path>
+                        <circle cx="17" cy="8" r="2.6"></circle>
+                        <path d="M15.4 14.6c2.7.2 5.1 2 5.1 4.6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="prof-stat__value">@friendsCount</div>
+                    <div class="prof-stat__label">Friends</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prof-card">
+            <div class="prof-card__head">
+                <div>
+                    <h3 class="prof-card__title">Change display name</h3>
+                    <p class="prof-card__sub">This is how your name appears across Organized.</p>
+                </div>
+            </div>
+            <div class="prof-card__body">
+                <form @onsubmit="SaveName" @onsubmit:preventDefault>
+                    <div class="prof-field">
+                        <label class="prof-field__label" for="displayName">Display name</label>
+                        <div class="prof-field__wrap">
+                            <span class="prof-field__icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="3.6"></circle>
+                                    <path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"></path>
+                                </svg>
+                            </span>
+                            <input id="displayName" class="prof-input" type="text" @bind="newName" @bind:event="oninput" />
+                        </div>
+                        <div class="prof-field__help">Between 2 and 40 characters. Letters, numbers, and spaces.</div>
+                    </div>
+
+                    <div class="prof-form-actions">
+                        <button class="prof-btn prof-btn--ghost" type="button" @onclick="CancelEdit" disabled="@isSaving">Cancel</button>
+                        <button class="prof-btn" type="submit" disabled="@isSaving">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            @(isSaving ? "Saving..." : "Save changes")
+                        </button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <div class="prof-message @(messageIsError ? "prof-message--error" : "prof-message--success")">
+                            @message
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private GetUserProfileResponse? profile;
+    private string newName = string.Empty;
+    private bool isSaving;
+    private string? message;
+    private bool messageIsError;
+
+    private int reservationsCount;
+    private int meetingsCount;
+    private int achievementsCount;
+    private int friendsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
+            return;
+        }
+
+        var userId = UserState.UserId!.Value;
+
+        var profileResult = await GetProfileHandler.ProcessActiveRequestAsnync(
+            new GetUserProfileRequest { UserId = userId });
+
+        profile = profileResult.Value;
+        newName = profile?.Name ?? string.Empty;
+
+        if (profile == null || !profile.Found)
+        {
+            return;
+        }
+
+        await LoadStats(userId, profile.Role);
+    }
+
+    private async Task LoadStats(int userId, UserRole role)
+    {
+        var friendsResult = await GetFriendsHandler.ProcessActiveRequestAsnync(
+            new GetUserFriendsRequest { UserId = userId });
+        friendsCount = friendsResult.Value?.Count ?? 0;
+
+        var achievementsResult = await GetAchievementsHandler.ProcessActiveRequestAsnync(
+            new GetUserAchievementsRequest { UserId = userId, UserRole = role });
+        achievementsCount = (achievementsResult.Value ?? new List<UserAchievementResponse>())
+            .Count(a => a.IsCompleted);
+
+        if (role == UserRole.Admin)
+        {
+            var meetingsResult = await GetAdminMeetingsHandler.ProcessActiveRequestAsnync(
+                new GetMeetingsCreatedByAdminRequest { AdminUserId = userId });
+            meetingsCount = meetingsResult.Value?.Count ?? 0;
+        }
+        else
+        {
+            var reservationsResult = await GetReservationsHandler.ProcessActiveRequestAsnync(
+                new GetUserReservationsRequest { UserId = userId });
+            var reservations = reservationsResult.Value ?? new List<ReservationResponse>();
+            reservationsCount = reservations.Count(r => r.Status != ReservationStatus.Cancelled);
+        }
+    }
+
+    private void CancelEdit()
+    {
+        if (profile != null) newName = profile.Name ?? string.Empty;
+        message = null;
+    }
+
+    private async Task SaveName()
+    {
+        if (profile == null || !profile.Found || isSaving) return;
+
+        isSaving = true;
+        message = null;
+
+        var result = await UpdateNameHandler.ProcessActiveRequestAsnync(
+            new UpdateUserDisplayNameRequest
+            {
+                UserId = UserState.UserId!.Value,
+                NewName = newName
+            });
+
+        isSaving = false;
+
+        var response = result.Value;
+        if (response != null && response.Success)
+        {
+            UserState.UpdateName(response.Name);
+            profile = new GetUserProfileResponse(
+                profile.Id, response.Name, profile.Email, profile.Role);
+            newName = response.Name ?? string.Empty;
+            message = "Display name updated.";
+            messageIsError = false;
+        }
+        else
+        {
+            message = response?.Error ?? "Update failed.";
+            messageIsError = true;
+        }
+    }
+}

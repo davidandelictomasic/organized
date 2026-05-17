@@ -166,7 +166,7 @@
     {
         if (!UserState.IsLoggedIn || !UserState.UserId.HasValue)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
             return;
         }
 

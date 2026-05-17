@@ -1,0 +1,38 @@
+@using Organized.Application.Users.User
+@using Organized.Services
+@inject UserStateService UserState
+@inject GetUserProfileRequestHandler GetProfileHandler
+
+@if (UserState.IsInitialized)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || UserState.IsInitialized) return;
+
+        var storedId = await UserState.GetStoredUserIdAsync();
+        if (storedId.HasValue)
+        {
+            var result = await GetProfileHandler.ProcessActiveRequestAsnync(
+                new GetUserProfileRequest { UserId = storedId.Value });
+
+            if (result.Value?.Found == true)
+            {
+                UserState.HydrateFromDb(
+                    result.Value.Id, result.Value.Email, result.Value.Name, result.Value.Role);
+            }
+            else
+            {
+                await UserState.LogoutAsync();
+            }
+        }
+
+        UserState.MarkInitialized();
+        StateHasChanged();
+    }
+}

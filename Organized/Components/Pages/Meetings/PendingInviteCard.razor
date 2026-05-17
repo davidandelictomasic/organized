@@ -1,0 +1,51 @@
+@using Organized.Application.Meetings
+
+<div class="muser-card">
+    <div class="muser-card__main">
+        <div class="muser-card__title">@Invite.Title</div>
+        @if (!string.IsNullOrEmpty(Invite.Description))
+        {
+            <div class="muser-card__desc">@Invite.Description</div>
+        }
+        <div class="muser-card__meta">
+            <span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                </svg>
+                @Invite.MeetingDate.ToString("MMM d, yyyy") · @Invite.MeetingDate.ToString("dddd")
+            </span>
+            <span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <polyline points="12 7 12 12 15 14"></polyline>
+                </svg>
+                @FormatTime(Invite.StartTime) — @FormatTime(Invite.EndTime)
+            </span>
+        </div>
+        @if (!string.IsNullOrEmpty(Invite.CreatorName))
+        {
+            <div class="muser-card__organizer">
+                Organized by <b>@Invite.CreatorName</b>
+            </div>
+        }
+    </div>
+    <div class="muser-actions">
+        <button class="muser-action muser-action--accept" type="button" @onclick="() => OnAccept.InvokeAsync(Invite.InviteId)">
+            <CheckIcon CssClass="muser-action__icon" />
+            Accept
+        </button>
+        <button class="muser-action muser-action--decline" type="button" @onclick="() => OnDecline.InvokeAsync(Invite.InviteId)">
+            <XMarkIcon CssClass="muser-action__icon" />
+            Decline
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PendingMeetingInviteResponse Invite { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnAccept { get; set; }
+    [Parameter] public EventCallback<int> OnDecline { get; set; }
+
+    private static string FormatTime(TimeSpan t) => $"{t.Hours:D2}:{t.Minutes:D2}";
+}

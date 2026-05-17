@@ -62,12 +62,16 @@
     {
         if (!UserState.IsLoggedIn)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
             return;
         }
 
         var result = await GetAchievementsHandler.ProcessActiveRequestAsnync(
-            new GetUserAchievementsRequest { UserId = UserState.UserId!.Value });
+            new GetUserAchievementsRequest
+            {
+                UserId = UserState.UserId!.Value,
+                UserRole = UserState.UserRole!.Value
+            });
 
         achievements = result.Value;
 

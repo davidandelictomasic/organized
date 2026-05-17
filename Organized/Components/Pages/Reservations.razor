@@ -12,58 +12,22 @@
 
 <PageTitle>Make a Reservation - Organized</PageTitle>
 
-<div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-    <h1>Make a Reservation</h1>
-
-    @if (UserState.IsLoggedIn)
-    {
-        <p>Welcome, @UserState.UserEmail!</p>
-
-        @if (!string.IsNullOrEmpty(message))
-        {
-            <div class="@(isSuccess ? "message-success" : "message-error")">
-                @message
-            </div>
-        }
-
-        <form @onsubmit="HandleSubmit" @onsubmit:preventDefault>
-            <div style="margin-bottom: 15px;">
-                <label for="tableSelect">Select Table:</label><br/>
-                <select id="tableSelect" @bind="selectedTableId" style="width: 100%; padding: 8px; margin-top: 5px;">
-                    <option value="0">-- Select a table --</option>
-                    @if (tables != null)
-                    {
-                        @foreach (var table in tables)
-                        {
-                            <option value="@table.Id">@table.CompanyName - @table.City (Table #@table.Id)</option>
-                        }
-                    }
-                </select>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label for="dateInput">Reservation Date:</label><br/>
-                <DatePicker Value="reservationDate"
-                            ValueChanged="(date) => reservationDate = date"
-                            DisableWeekends="true"
-                            CssClass="date-input"
-                            Placeholder="Select a weekday" />
-            </div>
-
-            <button type="submit" style="padding: 10px 20px; background-color: #1e3a5f; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Create Reservation
-            </button>
-        </form>
-
-        <hr style="margin: 30px 0;" />
-
-        <p><a href="/my-reservations">View My Reservations</a></p>
-    }
-</div>
-
 <div class="floorplan-section">
-    <h2 class="floorplan-title">Or Select from Floor Plan</h2>
-    <p class="floorplan-subtitle">Use scroll wheel to zoom, drag to pan. Click on a table to reserve.</p>
+    <h1 class="floorplan-title">Make a Reservation</h1>
+    <div class="floorplan-pills">
+        <span class="floorplan-pill">
+            <PlusCircleIcon CssClass="floorplan-pill__icon" />
+            Scroll to zoom
+        </span>
+        <span class="floorplan-pill">
+            <ArrowsPointingOutIcon CssClass="floorplan-pill__icon" />
+            Drag to pan
+        </span>
+        <span class="floorplan-pill">
+            <CheckSquareIcon CssClass="floorplan-pill__icon" />
+            Click a desk to reserve
+        </span>
+    </div>
 
     @if (UserState.IsLoggedIn)
     {
@@ -82,7 +46,7 @@
 
                         <div class="reservation-modal-form">
                             <div class="reservation-modal-header">
-                                <h2 class="reservation-modal-title">Reserve Desk @(floorPlanSelectedTableId - 99)</h2>
+                                <h2 class="reservation-modal-title">Reserve @SelectedTableLabel</h2>
                                 <button class="reservation-modal-close" @onclick="CloseModal" title="Close">&times;</button>
                             </div>
 
@@ -125,8 +89,6 @@
 
 @code {
     private List<CompanyTableResponse>? tables;
-    private int selectedTableId = 0;
-    private DateTime reservationDate = DateTime.Today;
     private string? message;
     private bool isSuccess;
 
@@ -143,19 +105,33 @@
 
     private List<TablePosition> tablePositions = new()
     {
-        new TablePosition { TableId = 100, X = 535.5, Y = 1308 },
-        new TablePosition { TableId = 101, X = 640.5, Y = 1329 },
-        new TablePosition { TableId = 102, X = 740.5, Y = 1319 },
-        new TablePosition { TableId = 103, X = 542, Y = 1175 },
-        new TablePosition { TableId = 104, X = 644.25, Y = 1150.5 },
-        new TablePosition { TableId = 105, X = 798, Y = 1149 },
+        new TablePosition { TableId = 1, X = 535.5, Y = 1308 },
+        new TablePosition { TableId = 2, X = 640.5, Y = 1329 },
+        new TablePosition { TableId = 3, X = 740.5, Y = 1319 },
+        new TablePosition { TableId = 4, X = 542, Y = 1175 },
+        new TablePosition { TableId = 5, X = 644.25, Y = 1150.5 },
+        new TablePosition { TableId = 6, X = 798, Y = 1149 },
+        new TablePosition { TableId = 11, X = 349, Y = 472, IsMeetingRoom = true },
+        new TablePosition { TableId = 12, X = 590, Y = 790 },
+        new TablePosition { TableId = 13, X = 655, Y = 788 },
+        new TablePosition { TableId = 14, X = 655, Y = 831 },
+        new TablePosition { TableId = 15, X = 591, Y = 831 },
     };
+
+    private string SelectedTableLabel
+    {
+        get
+        {
+            var pos = tablePositions.FirstOrDefault(p => p.TableId == floorPlanSelectedTableId);
+            return pos?.Label ?? $"Table {floorPlanSelectedTableId}";
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         if (!UserState.IsLoggedIn)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
             return;
         }
 
@@ -191,7 +167,7 @@
                     {
                         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.addMarker",
                             pos.TableId, pos.X, pos.Y,
-                            $"Desk {pos.TableId - 99}", dotNetRef);
+                            pos.Label, dotNetRef);
                     }
                 }
             }
@@ -217,48 +193,9 @@
         StateHasChanged();
 
         await Task.Delay(100);
-        var markerData = tablePositions.Select(p => new { tableId = p.TableId, x = p.X, y = p.Y }).ToArray();
+        var markerData = tablePositions.Select(p => new { tableId = p.TableId, x = p.X, y = p.Y, label = p.Label }).ToArray();
         await JSRuntime.InvokeVoidAsync("ReservationsFloorPlan.initializePreview",
             "preview-floorplan-map", "groundplan.jpg", ImageWidth, ImageHeight, markerData, tableId);
-    }
-
-    private async Task HandleSubmit()
-    {
-        if (selectedTableId == 0)
-        {
-            message = "Please select a table.";
-            isSuccess = false;
-            return;
-        }
-
-        if (!UserState.UserId.HasValue)
-        {
-            message = "User not logged in.";
-            isSuccess = false;
-            return;
-        }
-
-        var request = new CreateReservationRequest
-        {
-            UserId = UserState.UserId.Value,
-            TableId = selectedTableId,
-            ReservationDate = DateTime.SpecifyKind(reservationDate, DateTimeKind.Utc)
-        };
-
-        var result = await CreateReservationHandler.ProcessActiveRequestAsnync(request);
-
-        if (result.Value?.Success == true)
-        {
-            message = $"Reservation created successfully! Reservation ID: {result.Value.Id}";
-            isSuccess = true;
-            selectedTableId = 0;
-            reservationDate = DateTime.Today;
-        }
-        else
-        {
-            message = "Failed to create reservation.";
-            isSuccess = false;
-        }
     }
 
     private async Task CloseModal()
@@ -336,5 +273,7 @@
         public int TableId { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
+        public bool IsMeetingRoom { get; set; }
+        public string Label => IsMeetingRoom ? "Meeting Room" : $"Desk {TableId}";
     }
 }

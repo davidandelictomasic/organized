@@ -34,6 +34,11 @@ namespace Organized.Infrastructure.Persistence.Users
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _dbContext.Users.ToListAsync();
+        }
+
         public async Task<IEnumerable<User>> SearchByNameOrEmail(string term, int excludeUserId)
         {
             var pattern = $"%{term}%";

@@ -51,6 +51,12 @@ namespace Organized.Infrastructure.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
+                    b.Property<int>("TargetRole")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("target_role");
+
                     b.HasKey("Id");
 
                     b.ToTable("achievements", "public");
@@ -58,83 +64,174 @@ namespace Organized.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 1,
                             Description = "Make your first table reservation",
                             IsHidden = false,
                             MaxProgress = 1,
-                            Name = "First Reservation"
+                            Name = "First Reservation",
+                            TargetRole = 1
                         },
                         new
                         {
-                            Id = 101,
-                            Description = "Make 5 reservations",
-                            IsHidden = false,
-                            MaxProgress = 5,
-                            Name = "Regular"
-                        },
-                        new
-                        {
-                            Id = 102,
+                            Id = 3,
                             Description = "Make 10 reservations",
                             IsHidden = false,
                             MaxProgress = 10,
-                            Name = "Frequent Visitor"
+                            Name = "Frequent Visitor",
+                            TargetRole = 1
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 4,
                             Description = "Make 25 reservations",
                             IsHidden = false,
                             MaxProgress = 25,
-                            Name = "Power User"
+                            Name = "Power User",
+                            TargetRole = 1
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 5,
                             Description = "Make 50 reservations",
                             IsHidden = false,
                             MaxProgress = 50,
-                            Name = "Legend"
+                            Name = "Legend",
+                            TargetRole = 1
                         },
                         new
                         {
-                            Id = 105,
-                            Description = "Make a reservation before 9 AM",
-                            IsHidden = true,
-                            MaxProgress = 1,
-                            Name = "Early Bird"
-                        },
-                        new
-                        {
-                            Id = 106,
-                            Description = "Make a reservation after 6 PM",
-                            IsHidden = true,
-                            MaxProgress = 1,
-                            Name = "Night Owl"
-                        },
-                        new
-                        {
-                            Id = 107,
-                            Description = "Reserve tables at 5 different companies",
-                            IsHidden = false,
-                            MaxProgress = 5,
-                            Name = "Explorer"
-                        },
-                        new
-                        {
-                            Id = 108,
+                            Id = 9,
                             Description = "Add 10 friends",
                             IsHidden = false,
                             MaxProgress = 10,
-                            Name = "Social Butterfly"
+                            Name = "Social Butterfly",
+                            TargetRole = 0
                         },
                         new
                         {
-                            Id = 109,
+                            Id = 10,
                             Description = "Add 25 friends",
                             IsHidden = false,
                             MaxProgress = 25,
-                            Name = "Networking Pro"
+                            Name = "Networking Pro",
+                            TargetRole = 0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Add 50 friends",
+                            IsHidden = false,
+                            MaxProgress = 50,
+                            Name = "LinkedIn IRL",
+                            TargetRole = 0
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Description = "Cancel 10 reservations",
+                            IsHidden = false,
+                            MaxProgress = 10,
+                            Name = "Plans Change",
+                            TargetRole = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Description = "Cancel 25 reservations",
+                            IsHidden = false,
+                            MaxProgress = 25,
+                            Name = "Serial Canceller",
+                            TargetRole = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Description = "Cancel 50 reservations",
+                            IsHidden = false,
+                            MaxProgress = 50,
+                            Name = "Master of Maybe",
+                            TargetRole = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Description = "Create your first meeting",
+                            IsHidden = false,
+                            MaxProgress = 1,
+                            Name = "First Order of Business",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Description = "Create 10 meetings",
+                            IsHidden = false,
+                            MaxProgress = 10,
+                            Name = "Meeting Maker",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Description = "Create 25 meetings",
+                            IsHidden = false,
+                            MaxProgress = 25,
+                            Name = "Calendar Tetris",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Description = "Create 50 meetings",
+                            IsHidden = false,
+                            MaxProgress = 50,
+                            Name = "Boss of Bosses",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Description = "Cancel 5 meetings",
+                            IsHidden = false,
+                            MaxProgress = 5,
+                            Name = "Reschedule Royalty",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Description = "Cancel 15 meetings",
+                            IsHidden = false,
+                            MaxProgress = 15,
+                            Name = "Master of Postponement",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Description = "Get 10 meeting invite accepts",
+                            IsHidden = false,
+                            MaxProgress = 10,
+                            Name = "Popular Demand",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Description = "Get 50 meeting invite accepts",
+                            IsHidden = false,
+                            MaxProgress = 50,
+                            Name = "Charisma Maxed",
+                            TargetRole = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Description = "Schedule 25 meetings shorter than 15 minutes",
+                            IsHidden = false,
+                            MaxProgress = 25,
+                            Name = "Could've Been an Email",
+                            TargetRole = 2
                         });
                 });
 
@@ -213,42 +310,42 @@ namespace Organized.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ReceiverId = 100,
-                            SenderId = 104,
+                            ReceiverId = 1,
+                            SenderId = 5,
                             Status = 0
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ReceiverId = 100,
-                            SenderId = 108,
+                            ReceiverId = 1,
+                            SenderId = 9,
                             Status = 0
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ReceiverId = 100,
-                            SenderId = 109,
+                            ReceiverId = 1,
+                            SenderId = 10,
                             Status = 0
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ReceiverId = 100,
-                            SenderId = 110,
+                            ReceiverId = 1,
+                            SenderId = 11,
                             Status = 0
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 5,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ReceiverId = 100,
-                            SenderId = 111,
+                            ReceiverId = 1,
+                            SenderId = 12,
                             Status = 0
                         });
                 });
@@ -288,53 +385,151 @@ namespace Organized.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 101,
-                            UserId = 100
+                            FriendId = 2,
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 102,
-                            UserId = 100
+                            FriendId = 3,
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 103,
-                            UserId = 100
+                            FriendId = 4,
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 102,
-                            UserId = 101
+                            FriendId = 3,
+                            UserId = 2
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 5,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 105,
-                            UserId = 100
+                            FriendId = 6,
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 105,
+                            Id = 6,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 106,
-                            UserId = 100
+                            FriendId = 7,
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 106,
+                            Id = 7,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FriendId = 107,
-                            UserId = 100
+                            FriendId = 8,
+                            UserId = 1
                         });
+                });
+
+            modelBuilder.Entity("Organized.Domain.Entities.Meetings.Meeting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval")
+                        .HasColumnName("end_time");
+
+                    b.Property<DateTime>("MeetingDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("meeting_date");
+
+                    b.Property<int>("MeetingRoomTableId")
+                        .HasColumnType("integer")
+                        .HasColumnName("meeting_room_table_id");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("MeetingDate");
+
+                    b.ToTable("meetings", "public");
+                });
+
+            modelBuilder.Entity("Organized.Domain.Entities.Meetings.MeetingInvite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("MeetingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("meeting_id");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("responded_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeetingId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("MeetingId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("meeting_invites", "public");
                 });
 
             modelBuilder.Entity("Organized.Domain.Entities.Reservations.Reservation", b =>
@@ -382,6 +577,12 @@ namespace Organized.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Capacity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("capacity");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -394,6 +595,12 @@ namespace Organized.Infrastructure.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("company_name");
 
+                    b.Property<bool>("IsMeetingRoom")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_meeting_room");
+
                     b.HasKey("Id");
 
                     b.ToTable("company_tables", "public");
@@ -401,63 +608,123 @@ namespace Organized.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 1,
+                            Capacity = 1,
                             City = "New York",
-                            CompanyName = "TechCorp"
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 2,
+                            Capacity = 1,
                             City = "New York",
-                            CompanyName = "TechCorp"
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 3,
+                            Capacity = 1,
                             City = "Los Angeles",
-                            CompanyName = "TechCorp"
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 4,
+                            Capacity = 1,
                             City = "Chicago",
-                            CompanyName = "DataSoft"
+                            CompanyName = "DataSoft",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 5,
+                            Capacity = 1,
                             City = "Chicago",
-                            CompanyName = "DataSoft"
+                            CompanyName = "DataSoft",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 105,
+                            Id = 6,
+                            Capacity = 1,
                             City = "Seattle",
-                            CompanyName = "CloudBase"
+                            CompanyName = "CloudBase",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 106,
+                            Id = 7,
+                            Capacity = 1,
                             City = "Seattle",
-                            CompanyName = "CloudBase"
+                            CompanyName = "CloudBase",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 107,
+                            Id = 8,
+                            Capacity = 1,
                             City = "Austin",
-                            CompanyName = "InnovateLab"
+                            CompanyName = "InnovateLab",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 108,
+                            Id = 9,
+                            Capacity = 1,
                             City = "Austin",
-                            CompanyName = "InnovateLab"
+                            CompanyName = "InnovateLab",
+                            IsMeetingRoom = false
                         },
                         new
                         {
-                            Id = 109,
+                            Id = 10,
+                            Capacity = 1,
                             City = "San Francisco",
-                            CompanyName = "StartupHub"
+                            CompanyName = "StartupHub",
+                            IsMeetingRoom = false
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Capacity = 10,
+                            City = "New York",
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = true
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Capacity = 1,
+                            City = "New York",
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Capacity = 1,
+                            City = "New York",
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Capacity = 1,
+                            City = "New York",
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Capacity = 1,
+                            City = "New York",
+                            CompanyName = "TechCorp",
+                            IsMeetingRoom = false
                         });
                 });
 
@@ -488,6 +755,12 @@ namespace Organized.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password");
 
+                    b.Property<int>("Role")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("role");
+
                     b.HasKey("Id");
 
                     b.ToTable("users", "public");
@@ -495,363 +768,417 @@ namespace Organized.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 1,
                             Email = "admin@organized.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Admin User",
-                            Password = "admin123"
+                            Password = "admin123",
+                            Role = 1
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 46,
+                            Email = "john.director@organized.com",
+                            LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "John Director",
+                            Password = "director123",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 2,
                             Email = "john.doe@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "John Doe",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 3,
                             Email = "jane.smith@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Jane Smith",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 4,
                             Email = "bob.johnson@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Bob Johnson",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 5,
                             Email = "alice.brown@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Alice Brown",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 105,
+                            Id = 6,
                             Email = "charlie.davis@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Charlie Davis",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 106,
+                            Id = 7,
                             Email = "diana.evans@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Diana Evans",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 107,
+                            Id = 8,
                             Email = "ethan.foster@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Ethan Foster",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 108,
+                            Id = 9,
                             Email = "fiona.garcia@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Fiona Garcia",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 109,
+                            Id = 10,
                             Email = "george.harris@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "George Harris",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 110,
+                            Id = 11,
                             Email = "hannah.iverson@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Hannah Iverson",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 111,
+                            Id = 12,
                             Email = "ian.jackson@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Ian Jackson",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 112,
+                            Id = 13,
                             Email = "julia.kim@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Julia Kim",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 113,
+                            Id = 14,
                             Email = "kevin.lee@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Kevin Lee",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 114,
+                            Id = 15,
                             Email = "laura.martinez@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Laura Martinez",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 115,
+                            Id = 16,
                             Email = "mason.nelson@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Mason Nelson",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 116,
+                            Id = 17,
                             Email = "nora.oborne@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Nora Oborne",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 117,
+                            Id = 18,
                             Email = "oliver.patel@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Oliver Patel",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 118,
+                            Id = 19,
                             Email = "penelope.quinn@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Penelope Quinn",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 119,
+                            Id = 20,
                             Email = "quentin.roberts@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Quentin Roberts",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 120,
+                            Id = 21,
                             Email = "rachel.stewart@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Rachel Stewart",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 121,
+                            Id = 22,
                             Email = "samuel.thompson@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Samuel Thompson",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 122,
+                            Id = 23,
                             Email = "tara.underwood@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Tara Underwood",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 123,
+                            Id = 24,
                             Email = "uma.vasquez@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Uma Vasquez",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 124,
+                            Id = 25,
                             Email = "victor.wong@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Victor Wong",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 125,
+                            Id = 26,
                             Email = "wendy.xu@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Wendy Xu",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 126,
+                            Id = 27,
                             Email = "xavier.young@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Xavier Young",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 127,
+                            Id = 28,
                             Email = "yara.zhang@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Yara Zhang",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 128,
+                            Id = 29,
                             Email = "zachary.adams@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Zachary Adams",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 129,
+                            Id = 30,
                             Email = "amelia.brooks@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Amelia Brooks",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 130,
+                            Id = 31,
                             Email = "benjamin.carter@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Benjamin Carter",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 131,
+                            Id = 32,
                             Email = "chloe.diaz@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Chloe Diaz",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 132,
+                            Id = 33,
                             Email = "daniel.edwards@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Daniel Edwards",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 133,
+                            Id = 34,
                             Email = "emma.fischer@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Emma Fischer",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 134,
+                            Id = 35,
                             Email = "felix.green@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Felix Green",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 135,
+                            Id = 36,
                             Email = "grace.hill@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Grace Hill",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 136,
+                            Id = 37,
                             Email = "henry.ingram@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Henry Ingram",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 137,
+                            Id = 38,
                             Email = "isabella.jones@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Isabella Jones",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 138,
+                            Id = 39,
                             Email = "jacob.klein@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Jacob Klein",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 139,
+                            Id = 40,
                             Email = "katherine.lopez@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Katherine Lopez",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 140,
+                            Id = 41,
                             Email = "liam.mitchell@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Liam Mitchell",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 141,
+                            Id = 42,
                             Email = "mia.nguyen@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Mia Nguyen",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 142,
+                            Id = 43,
                             Email = "noah.owens@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Noah Owens",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 143,
+                            Id = 44,
                             Email = "olivia.park@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Olivia Park",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         },
                         new
                         {
-                            Id = 144,
+                            Id = 45,
                             Email = "patrick.reyes@example.com",
                             LastOnline = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Patrick Reyes",
-                            Password = "password123"
+                            Password = "password123",
+                            Role = 0
                         });
                 });
 #pragma warning restore 612, 618

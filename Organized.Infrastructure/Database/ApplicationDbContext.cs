@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Organized.Domain.Entities.Achievements;
 using Organized.Domain.Entities.Friends;
+using Organized.Domain.Entities.Meetings;
 using Organized.Domain.Entities.Reservations;
 using Organized.Domain.Entities.Tables;
 using Organized.Domain.Entities.Users;
@@ -26,6 +27,9 @@ namespace Organized.Infrastructure.Database
 
         public DbSet<Friendship> Friendships { get; set; } = null!;
         public DbSet<FriendRequest> FriendRequests { get; set; } = null!;
+
+        public DbSet<Meeting> Meetings { get; set; } = null!;
+        public DbSet<MeetingInvite> MeetingInvites { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

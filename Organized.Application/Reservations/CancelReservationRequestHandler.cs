@@ -1,3 +1,4 @@
+using Organized.Application.Achievements;
 using Organized.Application.Common.Model;
 using Organized.Domain.Enums;
 using Organized.Domain.Persistence.Common;
@@ -30,10 +31,12 @@ namespace Organized.Application.Reservations
     public class CancelReservationRequestHandler : RequestHandler<CancelReservationRequest, CancelReservationResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AchievementTracker _achievementTracker;
 
-        public CancelReservationRequestHandler(IUnitOfWork unitOfWork)
+        public CancelReservationRequestHandler(IUnitOfWork unitOfWork, AchievementTracker achievementTracker)
         {
             _unitOfWork = unitOfWork;
+            _achievementTracker = achievementTracker;
         }
 
         protected override async Task<Result<CancelReservationResponse>> HandleRequest(CancelReservationRequest request, Result<CancelReservationResponse> result)
@@ -61,6 +64,8 @@ namespace Organized.Application.Reservations
             reservation.Status = ReservationStatus.Cancelled;
             _unitOfWork.ReservationRepository.Update(reservation);
             await _unitOfWork.SaveAsync();
+
+            await _achievementTracker.TrackReservationCancelled(request.UserId);
 
             result.SetResult(new CancelReservationResponse(true, "Reservation cancelled successfully."));
             return result;

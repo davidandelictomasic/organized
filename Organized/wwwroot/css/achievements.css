@@ -135,6 +135,10 @@
 .icon-pink { background: #fce7f3; color: #db2777; }
 .icon-red { background: #fee2e2; color: #dc2626; }
 .icon-gray { background: #f1f5f9; color: #94a3b8; }
+.icon-rose { background: #ffe4e6; color: #e11d48; }
+.icon-violet { background: #f5f3ff; color: #8b5cf6; }
+.icon-emerald { background: #d1fae5; color: #059669; }
+.icon-sky { background: #e0f2fe; color: #0284c7; }
 
 .achievement-content {
     flex: 1;

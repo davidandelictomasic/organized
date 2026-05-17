@@ -1,7 +1,6 @@
 @implements IDisposable
 @using Organized.Services
 @inject UserStateService UserState
-@inject NavigationManager Navigation
 
 <section id="hero" class="hero">
     <div class="hero__blob hero__blob--tr"></div>
@@ -42,10 +41,13 @@
         <p class="hero__lede">
             The smart way to manage your workspace reservations. Book desks and plan your day with ease.
         </p>
-        <div class="hero__ctas">
-            <button type="button" class="hero-btn hero-btn--primary" @onclick="HandleGetStarted">Get Started</button>
-            <a href="#how-it-works" class="hero-btn hero-btn--ghost">Learn More</a>
-        </div>
+        @if (!UserState.IsLoggedIn)
+        {
+            <div class="hero__ctas">
+                <a href="/login" class="hero-btn hero-btn--primary">Get Started</a>
+                <a href="#how-it-works" class="hero-btn hero-btn--ghost">Learn More</a>
+            </div>
+        }
     </div>
 
     <div class="hero__wave" aria-hidden="true">
@@ -102,14 +104,6 @@
         }
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    private void HandleGetStarted()
-    {
-        if (UserState.IsLoggedIn)
-            Navigation.NavigateTo("/reservations");
-        else
-            Navigation.NavigateTo("/login");
     }
 
     public void Dispose()

@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Organized.Domain.Entities.Users;
+using Organized.Domain.Enums;
 
 namespace Organized.Infrastructure.Database.Configurations.Users
 {
@@ -31,6 +32,11 @@ namespace Organized.Infrastructure.Database.Configurations.Users
 
             builder.Property(u => u.LastOnline)
                    .HasColumnName("last_online");
+
+            builder.Property(u => u.Role)
+                   .HasColumnName("role")
+                   .IsRequired()
+                   .HasDefaultValue(UserRole.User);
         }
     }
 }

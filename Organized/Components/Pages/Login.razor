@@ -79,11 +79,21 @@
     [SupplyParameterFromForm]
     public LoginModel? loginModel { get; set; } = new();
 
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
     private string? errorMessage;
     private bool isLoading;
     private bool showPassword;
 
     private void TogglePassword() => showPassword = !showPassword;
+
+    private string GetSafeReturnUrl()
+    {
+        if (string.IsNullOrEmpty(ReturnUrl)) return "/";
+        if (!ReturnUrl.StartsWith('/') || ReturnUrl.StartsWith("//")) return "/";
+        return ReturnUrl;
+    }
 
     private async Task HandleLogin(EditContext context)
     {
@@ -110,8 +120,8 @@
 
             if (result.Value?.Found == true && result.Value.PasswordMatch)
             {
-                UserState.SetUser(result.Value.Id, result.Value.Email, result.Value.Name);
-                Navigation.NavigateTo("/reservations");
+                await UserState.LoginAsync(result.Value.Id, result.Value.Email, result.Value.Name, result.Value.Role);
+                Navigation.NavigateTo(GetSafeReturnUrl());
             }
             else if (result.Value?.Found == true && !result.Value.PasswordMatch)
             {

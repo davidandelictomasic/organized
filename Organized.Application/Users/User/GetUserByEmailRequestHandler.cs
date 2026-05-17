@@ -1,4 +1,5 @@
 using Organized.Application.Common.Model;
+using Organized.Domain.Enums;
 using Organized.Domain.Persistence.Common;
 
 namespace Organized.Application.Users.User
@@ -8,14 +9,16 @@ namespace Organized.Application.Users.User
         public int Id { get; init; }
         public string? Name { get; init; }
         public string? Email { get; init; }
+        public UserRole Role { get; init; }
         public bool Found { get; init; }
         public bool PasswordMatch { get; init; }
 
-        public GetUserByEmailResponse(int id, string? name, string? email, bool passwordMatch)
+        public GetUserByEmailResponse(int id, string? name, string? email, UserRole role, bool passwordMatch)
         {
             Id = id;
             Name = name;
             Email = email;
+            Role = role;
             Found = true;
             PasswordMatch = passwordMatch;
         }
@@ -61,7 +64,7 @@ namespace Organized.Application.Users.User
                 await _unitOfWork.SaveAsync();
             }
 
-            result.SetResult(new GetUserByEmailResponse(user.Id, user.Name, user.Email, passwordMatch));
+            result.SetResult(new GetUserByEmailResponse(user.Id, user.Name, user.Email, user.Role, passwordMatch));
             return result;
         }
 

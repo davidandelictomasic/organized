@@ -1,5 +1,5 @@
+using Organized.Application.Achievements;
 using Organized.Application.Common.Model;
-using Organized.Domain.Entities.Achievements;
 using Organized.Domain.Entities.Friends;
 using Organized.Domain.Enums;
 using Organized.Domain.Persistence.Common;
@@ -14,13 +14,13 @@ namespace Organized.Application.Friends
 
     public class AcceptFriendRequestRequestHandler : RequestHandler<AcceptFriendRequestRequest, FriendActionResponse>
     {
-        private static readonly int[] FriendAchievementIds = new[] { 108, 109 };
-
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AchievementTracker _achievementTracker;
 
-        public AcceptFriendRequestRequestHandler(IUnitOfWork unitOfWork)
+        public AcceptFriendRequestRequestHandler(IUnitOfWork unitOfWork, AchievementTracker achievementTracker)
         {
             _unitOfWork = unitOfWork;
+            _achievementTracker = achievementTracker;
         }
 
         protected async override Task<Result<FriendActionResponse>> HandleRequest(AcceptFriendRequestRequest request, Result<FriendActionResponse> result)
@@ -56,55 +56,11 @@ namespace Organized.Application.Friends
             await _unitOfWork.FriendshipRepository.InsertAsync(friendship);
             await _unitOfWork.SaveAsync();
 
-            await UpdateFriendAchievements(friendRequest.SenderId);
-            await UpdateFriendAchievements(friendRequest.ReceiverId);
-            await _unitOfWork.SaveAsync();
+            await _achievementTracker.TrackFriendAdded(friendRequest.SenderId);
+            await _achievementTracker.TrackFriendAdded(friendRequest.ReceiverId);
 
             result.SetResult(new FriendActionResponse(true));
             return result;
-        }
-
-        private async Task UpdateFriendAchievements(int userId)
-        {
-            var friendCount = (await _unitOfWork.FriendshipRepository.GetByUserId(userId)).Count();
-
-            foreach (var achievementId in FriendAchievementIds)
-            {
-                var userAchievement = await _unitOfWork.UserAchievementRepository.GetByUserAndAchievement(userId, achievementId);
-                var isNew = false;
-
-                if (userAchievement == null)
-                {
-                    var achievement = await _unitOfWork.AchievementRepository.GetById(achievementId);
-                    if (achievement == null) continue;
-
-                    userAchievement = new UserAchievement
-                    {
-                        UserId = userId,
-                        AchievementId = achievementId,
-                        Progress = 0,
-                        IsCompleted = false
-                    };
-                    await _unitOfWork.UserAchievementRepository.InsertAsync(userAchievement);
-                    isNew = true;
-                }
-
-                if (userAchievement.IsCompleted) continue;
-
-                var maxProgress = (await _unitOfWork.AchievementRepository.GetById(achievementId))?.MaxProgress ?? 0;
-                userAchievement.Progress = Math.Min(friendCount, maxProgress);
-
-                if (maxProgress > 0 && userAchievement.Progress >= maxProgress)
-                {
-                    userAchievement.IsCompleted = true;
-                    userAchievement.CompletedAt = DateTime.UtcNow;
-                }
-
-                if (!isNew)
-                {
-                    _unitOfWork.UserAchievementRepository.Update(userAchievement);
-                }
-            }
         }
 
         protected override Task<bool> IsActive()

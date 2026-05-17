@@ -1,0 +1,58 @@
+@using Organized.Application.Meetings
+
+<div class="meet-card" style="margin-bottom: 16px;">
+    <div class="meet-card__head">
+        <h2 class="meet-card__title">My Created Meetings</h2>
+        <span class="meetings-head__sub">
+            <b>@UpcomingCount</b> upcoming · <b>@(Meetings?.Count ?? 0)</b> total
+        </span>
+    </div>
+</div>
+
+@if (Meetings == null)
+{
+    <div class="meet-loading">Loading meetings…</div>
+}
+else if (Meetings.Count == 0)
+{
+    <div class="meet-card">
+        <div class="meet-card__body">
+            <div class="meet-empty">No meetings yet. Use the form to create your first one.</div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="meet-toolbar">
+        <div class="meet-toolbar__count">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <b>@Meetings.Count</b> meetings
+        </div>
+    </div>
+
+    <div class="meeting-list">
+        @foreach (var m in Meetings)
+        {
+            <AdminMeetingCard Meeting="m" RoomName="@GetRoomName(m.MeetingRoomTableId)" OnCancel="OnCancel" />
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public List<AdminMeetingSummaryResponse>? Meetings { get; set; }
+    [Parameter] public List<MeetingRoomResponse>? Rooms { get; set; }
+    [Parameter] public EventCallback<int> OnCancel { get; set; }
+
+    private int UpcomingCount =>
+        Meetings?.Count(m => m.Status == Domain.Enums.MeetingStatus.Scheduled
+                              && m.MeetingDate.Date >= DateTime.UtcNow.Date) ?? 0;
+
+    private string? GetRoomName(int roomId)
+    {
+        var room = Rooms?.FirstOrDefault(r => r.Id == roomId);
+        if (room == null) return null;
+        return $"{room.CompanyName} · {room.City}";
+    }
+}

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Organized.Domain.Entities.Achievements;
+using Organized.Domain.Enums;
 
 namespace Organized.Infrastructure.Database.Configurations.Achievements
 {
@@ -31,6 +32,11 @@ namespace Organized.Infrastructure.Database.Configurations.Achievements
             builder.Property(a => a.IsHidden)
                    .HasColumnName("is_hidden")
                    .IsRequired();
+
+            builder.Property(a => a.TargetRole)
+                   .HasColumnName("target_role")
+                   .IsRequired()
+                   .HasDefaultValue(AchievementTargetRole.Both);
         }
     }
 }

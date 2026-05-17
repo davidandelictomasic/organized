@@ -6,12 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Organized.Domain.Persistence.Achievements;
 using Organized.Domain.Persistence.Common;
 using Organized.Domain.Persistence.Friends;
+using Organized.Domain.Persistence.Meetings;
 using Organized.Domain.Persistence.Reservations;
 using Organized.Domain.Persistence.Tables;
 using Organized.Domain.Persistence.Users;
 using Organized.Infrastructure.Persistence.Achievements;
 using Organized.Infrastructure.Persistence.Common;
 using Organized.Infrastructure.Persistence.Friends;
+using Organized.Infrastructure.Persistence.Meetings;
 using Organized.Infrastructure.Persistence.Reservations;
 using Organized.Infrastructure.Persistence.Tables;
 using Organized.Infrastructure.Persistence.Users;
@@ -62,6 +64,10 @@ namespace Organized.Infrastructure.Database
             // Friends
             services.AddScoped<IFriendshipRepository, FriendshipRepository>();
             services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
+
+            // Meetings
+            services.AddScoped<IMeetingRepository, MeetingRepository>();
+            services.AddScoped<IMeetingInviteRepository, MeetingInviteRepository>();
 
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

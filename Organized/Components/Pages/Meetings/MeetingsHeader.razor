@@ -1,0 +1,27 @@
+<div class="meetings-head">
+    <div>
+        <h1 class="meetings-head__title">Meetings</h1>
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <div class="meetings-head__sub">@((MarkupString)Subtitle)</div>
+        }
+    </div>
+
+    @if (ShowAction && OnActionClick.HasDelegate)
+    {
+        <button class="meet-btn" type="button" @onclick="OnActionClick">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            @ActionLabel
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public bool ShowAction { get; set; }
+    [Parameter] public string ActionLabel { get; set; } = "New Meeting";
+    [Parameter] public EventCallback OnActionClick { get; set; }
+}

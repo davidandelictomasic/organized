@@ -1,0 +1,405 @@
+/* ===========================================================
+   Admin Panel
+   =========================================================== */
+
+.admin-page {
+    --adm-blue:    #4858ff;
+    --adm-purple:  #7a3ff0;
+    --adm-ink-1:   #0f172a;
+    --adm-ink-2:   #334155;
+    --adm-ink-3:   #64748b;
+    --adm-ink-4:   #94a3b8;
+    --adm-line:    #e2e8f0;
+    --adm-line-2:  #eef0f6;
+    --adm-soft:    #f8fafc;
+    --adm-grad-2:  linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
+
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--adm-ink-1);
+}
+
+.admin-page * { box-sizing: border-box; }
+
+.admin-page .adm-title {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+}
+
+.admin-page .adm-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--adm-ink-3);
+    font-size: 15px;
+}
+
+/* ---------- Grid layout ---------- */
+.admin-page .adm-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .admin-page .adm-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Shared card ---------- */
+.admin-page .adm-list-card,
+.admin-page .adm-detail-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+/* ---------- User list (left) ---------- */
+.admin-page .adm-list-head {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--adm-line-2);
+}
+
+.admin-page .adm-list-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-page .adm-list-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--adm-grad-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+}
+
+.admin-page .adm-search {
+    position: relative;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--adm-line-2);
+}
+
+.admin-page .adm-search__icon {
+    position: absolute;
+    left: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--adm-ink-4);
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.admin-page .adm-search__input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px 0 38px;
+    border-radius: 10px;
+    border: 1.5px solid var(--adm-line);
+    background: var(--adm-soft);
+    font: inherit;
+    font-size: 14px;
+    color: var(--adm-ink-1);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-page .adm-search__input:hover { border-color: #cbd5e1; }
+.admin-page .adm-search__input:focus {
+    border-color: var(--adm-purple);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(122, 63, 240, 0.14);
+}
+
+.admin-page .adm-search:focus-within .adm-search__icon { color: var(--adm-purple); }
+
+.admin-page .adm-list {
+    max-height: 640px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.admin-page .adm-list-empty {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--adm-ink-3);
+    font-size: 13.5px;
+}
+
+.admin-page .adm-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-page .adm-user:hover {
+    background: var(--adm-soft);
+    border-color: var(--adm-line);
+}
+
+.admin-page .adm-user--active {
+    background: rgba(72, 88, 255, 0.08);
+    border-color: rgba(72, 88, 255, 0.28);
+}
+
+.admin-page .adm-user__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--adm-grad-2);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 12.5px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(72, 88, 255, 0.22);
+}
+
+.admin-page .adm-user__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-page .adm-user__name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--adm-ink-1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-page .adm-user__email {
+    font-size: 12px;
+    color: var(--adm-ink-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-page .adm-user__role {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.admin-page .adm-user__role--admin {
+    color: #fff;
+    background: var(--adm-grad-2);
+}
+
+.admin-page .adm-user__role--user {
+    color: var(--adm-ink-2);
+    background: var(--adm-soft);
+    border: 1px solid var(--adm-line);
+}
+
+/* ---------- Detail (right) ---------- */
+.admin-page .adm-detail-empty {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--adm-ink-3);
+    font-size: 14px;
+}
+
+.admin-page .adm-detail-empty--inline {
+    padding: 28px 20px;
+}
+
+.admin-page .adm-detail-empty__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--adm-soft);
+    color: var(--adm-ink-3);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 12px;
+}
+
+.admin-page .adm-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--adm-line-2);
+}
+
+.admin-page .adm-detail-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--adm-grad-2);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 8px 18px rgba(72, 88, 255, 0.26);
+}
+
+.admin-page .adm-detail-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.admin-page .adm-detail-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--adm-ink-1);
+}
+
+.admin-page .adm-detail-role {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+.admin-page .adm-detail-role--admin {
+    color: #fff;
+    background: var(--adm-grad-2);
+}
+
+.admin-page .adm-detail-role--user {
+    color: var(--adm-ink-2);
+    background: var(--adm-soft);
+    border: 1px solid var(--adm-line);
+}
+
+.admin-page .adm-detail-email {
+    font-size: 13.5px;
+    color: var(--adm-ink-3);
+    margin-top: 2px;
+}
+
+.admin-page .adm-detail-status {
+    font-size: 12.5px;
+    color: var(--adm-ink-3);
+    margin-top: 4px;
+}
+
+.admin-page .adm-detail-body {
+    padding: 20px 24px 24px;
+}
+
+.admin-page .adm-section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.admin-page .adm-section-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--adm-ink-1);
+}
+
+.admin-page .adm-section-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--adm-ink-2);
+    background: var(--adm-soft);
+    border: 1px solid var(--adm-line);
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+/* ---------- Reservation rows ---------- */
+.admin-page .adm-resv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-page .adm-resv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--adm-line-2);
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-page .adm-resv:hover {
+    border-color: rgba(72, 88, 255, 0.22);
+    box-shadow: 0 4px 12px rgba(72, 88, 255, 0.06);
+}
+
+.admin-page .adm-resv__main {
+    min-width: 0;
+}
+
+.admin-page .adm-resv__table {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--adm-ink-1);
+}
+
+.admin-page .adm-resv__date {
+    font-size: 12.5px;
+    color: var(--adm-ink-3);
+    margin-top: 2px;
+}
+
+.admin-page .adm-resv__status {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.admin-page .adm-resv__status--pending {
+    background: rgba(72, 88, 255, 0.10);
+    color: var(--adm-blue);
+}
+
+.admin-page .adm-resv__status--completed {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--adm-ink-2);
+}
+
+.admin-page .adm-resv__status--cancelled {
+    background: rgba(239, 68, 68, 0.10);
+    color: #b91c1c;
+}

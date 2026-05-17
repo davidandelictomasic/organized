@@ -1,3 +1,5 @@
+using Organized.Domain.Enums;
+
 namespace Organized.Domain.Entities.Achievements
 {
     public class Achievement
@@ -7,5 +9,6 @@ namespace Organized.Domain.Entities.Achievements
         public string? Description { get; set; }
         public int MaxProgress { get; set; }
         public bool IsHidden { get; set; } = false;
+        public AchievementTargetRole TargetRole { get; set; } = AchievementTargetRole.Both;
     }
 }

@@ -142,19 +142,21 @@ window.ReservationsFloorPlan = {
         if (markerData && markerData.length > 0) {
             markerData.forEach(function (m) {
                 var isSelected = m.tableId === selectedTableId;
+                var label = m.label || ('Desk ' + m.tableId);
+                var iconText = m.label === 'Meeting Room' ? 'M' : m.tableId;
 
                 var icon = L.divIcon({
                     className: 'preview-marker-icon',
                     html: '<div class="preview-marker ' + (isSelected ? 'preview-marker-selected' : '') + '">' +
-                          '<span>' + (m.tableId - 99) + '</span></div>',
+                          '<span>' + iconText + '</span></div>',
                     iconSize: [isSelected ? 36 : 28, isSelected ? 36 : 28],
                     iconAnchor: [isSelected ? 18 : 14, isSelected ? 18 : 14]
                 });
 
                 var marker = L.marker([m.y, m.x], { icon: icon, interactive: true }).addTo(this.previewMap);
                 var popupText = isSelected
-                    ? '<b>Desk ' + (m.tableId - 99) + '</b><br><span style="color:#667eea;">You will be here</span>'
-                    : '<b>Desk ' + (m.tableId - 99) + '</b>';
+                    ? '<b>' + label + '</b><br><span style="color:#667eea;">You will be here</span>'
+                    : '<b>' + label + '</b>';
                 marker.bindPopup(popupText);
 
                 marker.on('mouseover', function () { this.openPopup(); });

@@ -1,0 +1,77 @@
+@using Organized.Application.Meetings
+@using Organized.Domain.Enums
+
+<div class="meeting-item">
+    <div class="meeting-item__main">
+        <div class="meeting-item__title">@Meeting.Title</div>
+        @if (!string.IsNullOrEmpty(Meeting.Description))
+        {
+            <div class="meeting-item__desc">@Meeting.Description</div>
+        }
+        <div class="meeting-item__meta">
+            <span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                </svg>
+                @Meeting.MeetingDate.ToString("MMM d, yyyy") · @Meeting.MeetingDate.ToString("dddd")
+            </span>
+            <span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <polyline points="12 7 12 12 15 14"></polyline>
+                </svg>
+                @FormatTime(Meeting.StartTime) – @FormatTime(Meeting.EndTime)
+            </span>
+            @if (!string.IsNullOrEmpty(RoomName))
+            {
+                <span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    @RoomName
+                </span>
+            }
+        </div>
+    </div>
+    <div class="meeting-item__right">
+        <div class="meet-invites">
+            <span class="meet-invite-stat meet-invite-stat--accept" title="Accepted">
+                <span class="meet-invite-stat__dot"></span>@Meeting.AcceptedCount
+            </span>
+            <span class="meet-invite-stat meet-invite-stat--decline" title="Declined">
+                <span class="meet-invite-stat__dot"></span>@Meeting.DeclinedCount
+            </span>
+            <span class="meet-invite-stat meet-invite-stat--pending" title="Pending">
+                <span class="meet-invite-stat__dot"></span>@Meeting.PendingCount
+            </span>
+        </div>
+        <span class="meet-status @StatusClass">@Meeting.Status</span>
+        @if (Meeting.Status == MeetingStatus.Scheduled)
+        {
+            <button class="meet-btn meet-btn--sm meet-btn--danger" type="button"
+                    @onclick="() => OnCancel.InvokeAsync(Meeting.MeetingId)"
+                    title="Cancel meeting">
+                <XMarkIcon CssClass="meet-btn__icon" />
+                Cancel
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public AdminMeetingSummaryResponse Meeting { get; set; } = default!;
+    [Parameter] public string? RoomName { get; set; }
+    [Parameter] public EventCallback<int> OnCancel { get; set; }
+
+    private string StatusClass => Meeting.Status switch
+    {
+        MeetingStatus.Scheduled => "meet-status--scheduled",
+        MeetingStatus.Completed => "meet-status--ended",
+        MeetingStatus.Cancelled => "meet-status--cancelled",
+        _ => "meet-status--ended"
+    };
+
+    private static string FormatTime(TimeSpan t) => $"{t.Hours:D2}:{t.Minutes:D2}";
+}

@@ -24,6 +24,16 @@ namespace Organized.Infrastructure.Database.Configurations.Tables
                    .HasColumnName("city")
                    .IsRequired()
                    .HasMaxLength(100);
+
+            builder.Property(t => t.IsMeetingRoom)
+                   .HasColumnName("is_meeting_room")
+                   .IsRequired()
+                   .HasDefaultValue(false);
+
+            builder.Property(t => t.Capacity)
+                   .HasColumnName("capacity")
+                   .IsRequired()
+                   .HasDefaultValue(1);
         }
     }
 }

@@ -1,5 +1,6 @@
 using Organized.Application.Common.Model;
 using Organized.Domain.Entities.Achievements;
+using Organized.Domain.Enums;
 using Organized.Domain.Persistence.Common;
 
 namespace Organized.Application.Achievements
@@ -7,6 +8,7 @@ namespace Organized.Application.Achievements
     public class GetUserAchievementsRequest
     {
         public int UserId { get; set; }
+        public UserRole UserRole { get; set; }
     }
 
     public class UserAchievementResponse
@@ -33,11 +35,14 @@ namespace Organized.Application.Achievements
         protected async override Task<Result<List<UserAchievementResponse>>> HandleRequest(GetUserAchievementsRequest request, Result<List<UserAchievementResponse>> result)
         {
             var userAchievements = await _unitOfWork.UserAchievementRepository.GetByUserId(request.UserId);
-            var achievements = await _unitOfWork.AchievementRepository.GetAll();
+            var allAchievements = await _unitOfWork.AchievementRepository.GetAll();
 
-            // Initialize missing achievements for existing users
+            var applicableAchievements = allAchievements
+                .Where(a => AppliesToRole(a.TargetRole, request.UserRole))
+                .ToList();
+
             var existingAchievementIds = userAchievements.Select(ua => ua.AchievementId).ToHashSet();
-            var missingAchievements = achievements.Where(a => !existingAchievementIds.Contains(a.Id)).ToList();
+            var missingAchievements = applicableAchievements.Where(a => !existingAchievementIds.Contains(a.Id)).ToList();
 
             if (missingAchievements.Any())
             {
@@ -54,17 +59,16 @@ namespace Organized.Application.Achievements
                 }
                 await _unitOfWork.SaveAsync();
 
-                // Re-fetch after inserting
                 userAchievements = await _unitOfWork.UserAchievementRepository.GetByUserId(request.UserId);
             }
 
-            var achievementDict = achievements.ToDictionary(a => a.Id);
+            var applicableDict = applicableAchievements.ToDictionary(a => a.Id);
 
             var response = userAchievements
-                .Where(ua => achievementDict.ContainsKey(ua.AchievementId))
+                .Where(ua => applicableDict.ContainsKey(ua.AchievementId))
                 .Select(ua =>
                 {
-                    var achievement = achievementDict[ua.AchievementId];
+                    var achievement = applicableDict[ua.AchievementId];
                     return new UserAchievementResponse
                     {
                         AchievementId = ua.AchievementId,
@@ -81,6 +85,17 @@ namespace Organized.Application.Achievements
 
             result.SetResult(response);
             return result;
+        }
+
+        private static bool AppliesToRole(AchievementTargetRole targetRole, UserRole userRole)
+        {
+            return targetRole switch
+            {
+                AchievementTargetRole.Both => true,
+                AchievementTargetRole.User => userRole == UserRole.User,
+                AchievementTargetRole.Admin => userRole == UserRole.Admin,
+                _ => false
+            };
         }
 
         protected override Task<bool> IsActive()

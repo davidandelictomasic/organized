@@ -1,0 +1,206 @@
+@page "/admin"
+@layout HomeLayout
+@using Organized.Application.Reservations
+@using Organized.Application.Users.User
+@using Organized.Components.Pages.Friends
+@using Organized.Domain.Enums
+@using Organized.Services
+@inject GetAllUsersForAdminRequestHandler GetAllUsersHandler
+@inject GetUserReservationsRequestHandler GetReservationsHandler
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Panel - Organized</PageTitle>
+
+<div class="admin-page">
+    <h1 class="adm-title">Admin Panel</h1>
+
+    @if (users == null)
+    {
+        <div class="adm-loading">Loading users…</div>
+    }
+    else
+    {
+        <div class="adm-grid">
+            <aside class="adm-list-card">
+                <div class="adm-list-head">
+                    <h2 class="adm-list-title">
+                        Users
+                        <span class="adm-list-count">@users.Count</span>
+                    </h2>
+                </div>
+
+                <div class="adm-search">
+                    <svg class="adm-search__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input class="adm-search__input"
+                           placeholder="Search by name or email…"
+                           @bind="searchTerm"
+                           @bind:event="oninput" />
+                </div>
+
+                @if (FilteredUsers.Count == 0)
+                {
+                    <div class="adm-list-empty">No users match.</div>
+                }
+                else
+                {
+                    <div class="adm-list">
+                        @foreach (var u in FilteredUsers)
+                        {
+                            <button class="adm-user @(selectedUser?.Id == u.Id ? "adm-user--active" : "")"
+                                    type="button"
+                                    @onclick="() => SelectUser(u)">
+                                <span class="adm-user__avatar">@GetInitials(u.Name)</span>
+                                <span class="adm-user__main">
+                                    <span class="adm-user__name">@u.Name</span>
+                                    <span class="adm-user__email">@u.Email</span>
+                                </span>
+                                <span class="adm-user__role adm-user__role--@(u.Role == UserRole.Admin ? "admin" : "user")">
+                                    @u.Role
+                                </span>
+                            </button>
+                        }
+                    </div>
+                }
+            </aside>
+
+            <section class="adm-detail-card">
+                @if (selectedUser == null)
+                {
+                    <div class="adm-detail-empty">
+                        <div class="adm-detail-empty__icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="3.6"></circle>
+                                <path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"></path>
+                            </svg>
+                        </div>
+                        Select a user to see their reservations.
+                    </div>
+                }
+                else
+                {
+                    <div class="adm-detail-head">
+                        <span class="adm-detail-avatar">@GetInitials(selectedUser.Name)</span>
+                        <div class="adm-detail-main">
+                            <div class="adm-detail-name">
+                                @selectedUser.Name
+                                <span class="adm-detail-role adm-detail-role--@(selectedUser.Role == UserRole.Admin ? "admin" : "user")">@selectedUser.Role</span>
+                            </div>
+                            <div class="adm-detail-email">@selectedUser.Email</div>
+                            <div class="adm-detail-status">@FriendStatus.GetLastSeenText(selectedUser.LastOnline)</div>
+                        </div>
+                    </div>
+
+                    <div class="adm-detail-body">
+                        <div class="adm-section-head">
+                            <h3 class="adm-section-title">Reservations</h3>
+                            <span class="adm-section-count">@(reservations?.Count ?? 0)</span>
+                        </div>
+
+                        @if (loadingReservations)
+                        {
+                            <div class="adm-detail-empty adm-detail-empty--inline">Loading reservations…</div>
+                        }
+                        else if (reservations == null || reservations.Count == 0)
+                        {
+                            <div class="adm-detail-empty adm-detail-empty--inline">No reservations yet.</div>
+                        }
+                        else
+                        {
+                            <div class="adm-resv-list">
+                                @foreach (var r in reservations)
+                                {
+                                    <div class="adm-resv">
+                                        <div class="adm-resv__main">
+                                            <div class="adm-resv__table">@r.TableName · @r.City</div>
+                                            <div class="adm-resv__date">@r.ReservationDate.ToString("MMM d, yyyy") · @r.ReservationDate.ToString("dddd")</div>
+                                        </div>
+                                        <span class="adm-resv__status adm-resv__status--@StatusModifier(r.Status)">@r.Status</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+    }
+</div>
+
+@code {
+    private List<AdminUserListItemResponse>? users;
+    private AdminUserListItemResponse? selectedUser;
+    private List<ReservationResponse>? reservations;
+    private bool loadingReservations;
+    private string searchTerm = string.Empty;
+
+    private List<AdminUserListItemResponse> FilteredUsers
+    {
+        get
+        {
+            if (users == null) return new List<AdminUserListItemResponse>();
+            if (string.IsNullOrWhiteSpace(searchTerm)) return users;
+            var t = searchTerm.Trim();
+            return users
+                .Where(u =>
+                    (u.Name != null && u.Name.Contains(t, StringComparison.OrdinalIgnoreCase)) ||
+                    (u.Email != null && u.Email.Contains(t, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
+            return;
+        }
+
+        if (!UserState.IsAdmin)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        var result = await GetAllUsersHandler.ProcessActiveRequestAsnync(new GetAllUsersForAdminRequest());
+        users = result.Value ?? new List<AdminUserListItemResponse>();
+    }
+
+    private async Task SelectUser(AdminUserListItemResponse user)
+    {
+        selectedUser = user;
+        reservations = null;
+        loadingReservations = true;
+        StateHasChanged();
+
+        var result = await GetReservationsHandler.ProcessActiveRequestAsnync(
+            new GetUserReservationsRequest { UserId = user.Id });
+
+        reservations = (result.Value ?? new List<ReservationResponse>())
+            .OrderByDescending(r => r.ReservationDate)
+            .ToList();
+        loadingReservations = false;
+    }
+
+    private static string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2) return $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[^1][0])}";
+        return parts[0].Length >= 2
+            ? $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[0][1])}"
+            : parts[0][0].ToString().ToUpper();
+    }
+
+    private static string StatusModifier(ReservationStatus status) => status switch
+    {
+        ReservationStatus.Pending => "pending",
+        ReservationStatus.Cancelled => "cancelled",
+        ReservationStatus.Completed => "completed",
+        _ => "pending"
+    };
+}

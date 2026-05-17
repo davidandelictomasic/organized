@@ -1,0 +1,942 @@
+/* ===========================================================
+   Meetings page
+   =========================================================== */
+
+.meetings-page {
+    --meet-blue:    #4858ff;
+    --meet-purple:  #7a3ff0;
+    --meet-magenta: #d83cd6;
+    --meet-ink-1:   #0f172a;
+    --meet-ink-2:   #334155;
+    --meet-ink-3:   #64748b;
+    --meet-ink-4:   #94a3b8;
+    --meet-line:    #e2e8f0;
+    --meet-line-2:  #eef0f6;
+    --meet-bg:      #f6f7fb;
+    --meet-card:    #ffffff;
+    --meet-soft:    #f8fafc;
+    --meet-grad:    linear-gradient(135deg, #4858ff 0%, #7a3ff0 50%, #d83cd6 100%);
+    --meet-grad-2:  linear-gradient(135deg, #4858ff 0%, #7a3ff0 100%);
+
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--meet-ink-1);
+}
+
+.meetings-page * { box-sizing: border-box; }
+
+/* ---------- Page header ---------- */
+.meetings-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.meetings-head__title {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+    color: var(--meet-ink-1);
+}
+
+.meetings-head__sub {
+    color: var(--meet-ink-3);
+    font-size: 14.5px;
+}
+
+.meetings-head__sub b { color: var(--meet-ink-1); font-weight: 700; }
+
+/* ---------- Buttons ---------- */
+.meet-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 0;
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: var(--meet-grad);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    box-shadow: 0 10px 24px rgba(72, 88, 255, 0.32);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
+}
+
+.meet-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(122, 63, 240, 0.36);
+}
+
+.meet-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.meet-btn--ghost {
+    background: #fff;
+    color: var(--meet-ink-2);
+    border: 1.5px solid var(--meet-line);
+    box-shadow: none;
+}
+
+.meet-btn--ghost:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: #cbd5e1;
+    background: var(--meet-soft);
+    box-shadow: 0 6px 14px rgba(15,23,42,0.06);
+}
+
+.meet-btn--sm { height: 36px; padding: 0 14px; font-size: 13.5px; border-radius: 10px; }
+
+.meet-btn--danger {
+    background: #fff;
+    color: #b91c1c;
+    border: 1.5px solid rgba(185, 28, 28, 0.32);
+    box-shadow: none;
+}
+
+.meet-btn--danger:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: rgba(185, 28, 28, 0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(185, 28, 28, 0.12);
+}
+
+.meet-btn__icon {
+    width: 13px;
+    height: 13px;
+}
+
+/* ---------- Layout ---------- */
+.meetings-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+@media (max-width: 1080px) {
+    .meetings-grid { grid-template-columns: 1fr; }
+}
+
+.meetings-stack { display: flex; flex-direction: column; gap: 22px; }
+
+/* ---------- Card ---------- */
+.meet-card {
+    background: var(--meet-card);
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.meet-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--meet-line-2);
+    gap: 12px;
+}
+
+.meet-card__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--meet-ink-1);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.meet-card__body { padding: 22px 24px 24px; }
+
+/* ---------- Form fields ---------- */
+.meet-field { margin-bottom: 16px; }
+
+.meet-field__label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--meet-ink-2);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.meet-field__wrap { position: relative; }
+
+.meet-field__icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--meet-ink-4);
+    pointer-events: none;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.meet-input,
+.meet-textarea,
+.meet-select {
+    width: 100%;
+    border-radius: 11px;
+    border: 1.5px solid var(--meet-line);
+    background: var(--meet-soft);
+    font: inherit;
+    font-size: 14.5px;
+    color: var(--meet-ink-1);
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+.meet-input         { height: 44px; padding: 0 14px 0 42px; }
+.meet-input--plain  { padding-left: 14px; }
+.meet-textarea      { padding: 12px 14px; resize: vertical; min-height: 84px; }
+
+.meet-select {
+    height: 44px;
+    padding: 0 36px 0 14px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.meet-input::placeholder,
+.meet-textarea::placeholder { color: var(--meet-ink-4); }
+
+.meet-input:hover,
+.meet-textarea:hover,
+.meet-select:hover { border-color: #cbd5e1; }
+
+.meet-input:focus,
+.meet-textarea:focus,
+.meet-select:focus {
+    border-color: var(--meet-purple);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(122, 63, 240, 0.14);
+}
+
+.meet-field__wrap:focus-within .meet-field__icon { color: var(--meet-purple); }
+
+/* Date trigger input — reads as a normal input but opens a popup on click */
+.meet-date-trigger {
+    cursor: pointer;
+    background: var(--meet-soft);
+}
+
+.meet-date-trigger:read-only { cursor: pointer; }
+
+.meet-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.meet-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+@media (max-width: 560px) {
+    .meet-row-2, .meet-row-3 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Messages ---------- */
+.meet-message {
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.meet-message--success {
+    background: rgba(16,185,129,0.10);
+    color: #047857;
+    border: 1px solid rgba(16,185,129,0.25);
+}
+
+.meet-message--error {
+    background: rgba(239,68,68,0.10);
+    color: #b91c1c;
+    border: 1px solid rgba(239,68,68,0.25);
+}
+
+/* ---------- Attendee search (recycled card style) ---------- */
+.meet-search-card {
+    border-radius: 14px;
+    border: 1px solid var(--meet-line);
+    background: #fff;
+    padding: 18px 22px;
+}
+
+.meet-search-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.meet-search-head__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--meet-ink-1);
+    margin: 0;
+}
+
+.meet-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.meet-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.meet-result:hover {
+    background: var(--meet-soft);
+    border-color: var(--meet-line);
+}
+
+.meet-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    background: var(--meet-grad-2);
+    box-shadow: 0 4px 10px rgba(72,88,255,0.22);
+}
+
+.meet-result__info { flex: 1; min-width: 0; }
+.meet-result__name { font-size: 14px; font-weight: 700; color: var(--meet-ink-1); }
+.meet-result__email { font-size: 12.5px; color: var(--meet-ink-3); }
+
+.meet-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--meet-line);
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--meet-ink-2);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.meet-pill:hover { border-color: var(--meet-purple); color: var(--meet-purple); }
+
+.meet-pill--add {
+    color: var(--meet-blue);
+    border-color: rgba(72,88,255,0.3);
+    background: rgba(72,88,255,0.06);
+}
+
+.meet-pill--add:hover { background: rgba(72,88,255,0.12); }
+
+.meet-pill--selected {
+    color: #fff;
+    background: var(--meet-grad-2);
+    border-color: transparent;
+    cursor: default;
+}
+
+.meet-pill--remove {
+    color: #b91c1c;
+    border-color: rgba(185,28,28,0.25);
+    background: rgba(254,226,226,0.5);
+}
+
+.meet-pill--remove:hover { background: rgba(254,202,202,0.8); }
+
+.meet-selected-block {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(72,88,255,0.3);
+    background: rgba(72,88,255,0.04);
+}
+
+.meet-selected-block__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--meet-ink-2);
+    margin-bottom: 10px;
+}
+
+.meet-selected-block__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meet-empty {
+    text-align: center;
+    color: var(--meet-ink-3);
+    font-size: 13.5px;
+    padding: 24px 0 8px;
+}
+
+/* ---------- Toolbar / Lists ---------- */
+.meet-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border: 1px solid rgba(15,23,42,0.05);
+    border-radius: 14px;
+    background: #fff;
+    margin-bottom: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.meet-toolbar__count {
+    color: var(--meet-ink-3);
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meet-toolbar__count b { color: var(--meet-ink-1); font-weight: 700; }
+
+.meeting-list { display: flex; flex-direction: column; gap: 10px; }
+
+.meeting-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(15,23,42,0.05);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.meeting-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(72,88,255,0.10);
+    border-color: rgba(72,88,255,0.18);
+}
+
+.meeting-item__main { min-width: 0; }
+.meeting-item__title { font-weight: 700; font-size: 15.5px; color: var(--meet-ink-1); }
+
+.meeting-item__desc {
+    font-size: 13px;
+    color: var(--meet-ink-3);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.meeting-item__meta {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--meet-ink-3);
+}
+
+.meeting-item__meta span { display: inline-flex; align-items: center; gap: 6px; }
+.meeting-item__meta svg { color: var(--meet-ink-4); }
+
+.meeting-item__right {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.meet-invites { display: flex; gap: 6px; }
+
+.meet-invite-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.meet-invite-stat__dot { width: 6px; height: 6px; border-radius: 50%; }
+
+.meet-invite-stat--accept  { background: rgba(16,185,129,0.10); color: #047857; }
+.meet-invite-stat--accept .meet-invite-stat__dot  { background: #10b981; }
+.meet-invite-stat--decline { background: rgba(239,68,68,0.10);  color: #b91c1c; }
+.meet-invite-stat--decline .meet-invite-stat__dot { background: #ef4444; }
+.meet-invite-stat--pending { background: rgba(245,158,11,0.12); color: #92400e; }
+.meet-invite-stat--pending .meet-invite-stat__dot { background: #f59e0b; }
+
+.meet-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.meet-status--scheduled { background: rgba(72,88,255,0.10); color: var(--meet-blue); }
+.meet-status--ended     { background: rgba(15,23,42,0.06);  color: var(--meet-ink-2); }
+.meet-status--cancelled { background: rgba(239,68,68,0.10); color: #b91c1c; }
+
+@media (max-width: 720px) {
+    .meeting-item { grid-template-columns: 1fr; }
+    .meeting-item__right { justify-content: flex-start; }
+}
+
+/* ---------- Pending invite card (user view) ---------- */
+.meet-invite-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 18px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(15,23,42,0.05);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+}
+
+.meet-invite-card__main { min-width: 0; }
+
+.meet-invite-card__actions {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.meet-invite-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 0;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.meet-invite-btn--accept {
+    color: #fff;
+    background: var(--meet-grad-2);
+    box-shadow: 0 6px 14px rgba(72,88,255,0.28);
+}
+
+.meet-invite-btn--accept:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(72,88,255,0.36);
+}
+
+.meet-invite-btn--decline {
+    color: #b91c1c;
+    background: rgba(254,226,226,0.5);
+    border: 1.5px solid rgba(185,28,28,0.25);
+}
+
+.meet-invite-btn--decline:hover { background: rgba(254,202,202,0.8); }
+
+@media (max-width: 720px) {
+    .meet-invite-card { grid-template-columns: 1fr; }
+}
+
+/* ---------- Loading / empty states ---------- */
+.meet-loading {
+    color: var(--meet-ink-3);
+    font-size: 14px;
+    padding: 18px;
+    text-align: center;
+}
+
+/* ===========================================================
+   Meetings — user view (My Invitations design)
+   Scoped under .meet-user-view to avoid colliding with admin view
+   =========================================================== */
+
+.meet-user-view {
+    --muser-green: #10b981;
+    --muser-red:   #ef4444;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.meet-user-view .muser-head {
+    margin-bottom: 22px;
+}
+
+.meet-user-view .muser-head__title {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+    color: var(--meet-ink-1);
+}
+
+/* ---------- Toast ---------- */
+.meet-user-view .muser-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 14.5px;
+    font-weight: 600;
+    margin-bottom: 22px;
+    border: 1px solid;
+    animation: muser-toast-in 0.35s ease-out;
+}
+
+@keyframes muser-toast-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.meet-user-view .muser-toast__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.meet-user-view .muser-toast__icon-svg {
+    width: 16px;
+    height: 16px;
+}
+
+.meet-user-view .muser-toast__close {
+    margin-left: auto;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    color: currentColor;
+    opacity: 0.6;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.meet-user-view .muser-toast__close:hover {
+    background: rgba(0, 0, 0, 0.06);
+    opacity: 1;
+}
+
+.meet-user-view .muser-toast__close-svg {
+    width: 14px;
+    height: 14px;
+}
+
+.meet-user-view .muser-toast--success {
+    background: #ecfdf5;
+    border-color: rgba(16, 185, 129, 0.32);
+    color: #065f46;
+}
+
+.meet-user-view .muser-toast--success .muser-toast__icon {
+    background: var(--muser-green);
+}
+
+.meet-user-view .muser-toast--error {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.32);
+    color: #991b1b;
+}
+
+.meet-user-view .muser-toast--error .muser-toast__icon {
+    background: var(--muser-red);
+}
+
+/* ---------- Section ---------- */
+.meet-user-view .muser-section {
+    margin-bottom: 28px;
+}
+
+.meet-user-view .muser-section:last-child {
+    margin-bottom: 0;
+}
+
+.meet-user-view .muser-section__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    margin-bottom: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.meet-user-view .muser-section__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--meet-ink-1);
+    letter-spacing: -0.01em;
+}
+
+.meet-user-view .muser-section__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: var(--meet-grad-2);
+    box-shadow: 0 4px 10px rgba(72, 88, 255, 0.28);
+}
+
+.meet-user-view .muser-section__icon--mute {
+    background: rgba(245, 158, 11, 0.14);
+    color: #b45309;
+    box-shadow: none;
+}
+
+.meet-user-view .muser-section__count {
+    color: var(--meet-ink-3);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.meet-user-view .muser-section__count b {
+    color: var(--meet-ink-1);
+    font-weight: 800;
+}
+
+/* ---------- Card ---------- */
+.meet-user-view .muser-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.meet-user-view .muser-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 20px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.meet-user-view .muser-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(72, 88, 255, 0.10);
+    border-color: rgba(72, 88, 255, 0.18);
+}
+
+.meet-user-view .muser-card__main {
+    flex: 1;
+    min-width: 0;
+}
+
+.meet-user-view .muser-card__title {
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--meet-ink-1);
+    letter-spacing: -0.01em;
+}
+
+.meet-user-view .muser-card__desc {
+    font-size: 13px;
+    color: var(--meet-ink-3);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.meet-user-view .muser-card__meta {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--meet-ink-3);
+}
+
+.meet-user-view .muser-card__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meet-user-view .muser-card__meta svg {
+    color: var(--meet-ink-4);
+}
+
+.meet-user-view .muser-card__organizer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--meet-ink-3);
+}
+
+.meet-user-view .muser-card__organizer b {
+    color: var(--meet-ink-1);
+    font-weight: 700;
+}
+
+/* ---------- Action buttons ---------- */
+.meet-user-view .muser-actions {
+    display: inline-flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.meet-user-view .muser-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.meet-user-view .muser-action__icon {
+    width: 14px;
+    height: 14px;
+}
+
+.meet-user-view .muser-action--accept {
+    background: var(--meet-grad-2);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(72, 88, 255, 0.32);
+}
+
+.meet-user-view .muser-action--accept:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(122, 63, 240, 0.38);
+}
+
+.meet-user-view .muser-action--decline {
+    background: #fff;
+    color: var(--muser-red);
+    border-color: rgba(239, 68, 68, 0.32);
+}
+
+.meet-user-view .muser-action--decline:hover {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.55);
+    transform: translateY(-1px);
+}
+
+/* ---------- Confirmed badge ---------- */
+.meet-user-view .muser-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+
+.meet-user-view .muser-badge__icon {
+    width: 11px;
+    height: 11px;
+}
+
+.meet-user-view .muser-badge--confirmed {
+    background: rgba(72, 88, 255, 0.10);
+    color: var(--meet-blue);
+}
+
+/* ---------- Empty state ---------- */
+.meet-user-view .muser-empty {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--meet-ink-3);
+    font-size: 13.5px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px dashed var(--meet-line);
+}
+
+.meet-user-view .muser-empty__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--meet-soft);
+    color: var(--meet-ink-3);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 10px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+    .meet-user-view .muser-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .meet-user-view .muser-actions {
+        width: 100%;
+    }
+    .meet-user-view .muser-action {
+        flex: 1;
+        justify-content: center;
+    }
+    .meet-user-view .muser-badge {
+        align-self: flex-start;
+    }
+}

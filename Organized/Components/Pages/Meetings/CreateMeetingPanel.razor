@@ -1,0 +1,218 @@
+@using Organized.Application.Meetings
+@using Organized.Components.Common
+@inject CreateMeetingRequestHandler CreateMeetingHandler
+
+<div class="meet-card">
+    <div class="meet-card__head">
+        <h2 class="meet-card__title">Create Meeting</h2>
+    </div>
+    <div class="meet-card__body">
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="meet-message @(success ? "meet-message--success" : "meet-message--error")">@message</div>
+        }
+
+        <div class="meet-field">
+            <label class="meet-field__label">Title</label>
+            <input class="meet-input meet-input--plain"
+                   placeholder="Sprint review with the design team"
+                   @bind="title"
+                   @bind:event="oninput" />
+        </div>
+
+        <div class="meet-field">
+            <label class="meet-field__label">Description</label>
+            <textarea class="meet-textarea"
+                      placeholder="Add agenda, links, or notes for attendees…"
+                      @bind="description"
+                      @bind:event="oninput"></textarea>
+        </div>
+
+        <div class="meet-row-2">
+            <div class="meet-field">
+                <label class="meet-field__label">Start time</label>
+                <div class="meet-field__wrap">
+                    <span class="meet-field__icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <polyline points="12 7 12 12 15 14"></polyline>
+                        </svg>
+                    </span>
+                    <input class="meet-input" type="time" @bind="startTime" />
+                </div>
+            </div>
+            <div class="meet-field">
+                <label class="meet-field__label">End time</label>
+                <div class="meet-field__wrap">
+                    <span class="meet-field__icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <polyline points="12 7 12 12 16 12"></polyline>
+                        </svg>
+                    </span>
+                    <input class="meet-input" type="time" @bind="endTime" />
+                </div>
+            </div>
+        </div>
+
+        <div class="meet-field">
+            <label class="meet-field__label">Meeting Room</label>
+            <select class="meet-select" @bind="selectedRoomId">
+                <option value="0">— Select a room —</option>
+                @if (Rooms != null)
+                {
+                    @foreach (var r in Rooms)
+                    {
+                        <option value="@r.Id">@r.CompanyName · @r.City · @r.Capacity seats</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="meet-field">
+            <label class="meet-field__label">Date</label>
+            <div class="meet-field__wrap">
+                <span class="meet-field__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                        <path d="M3 9h18"></path>
+                        <path d="M8 3v4"></path>
+                        <path d="M16 3v4"></path>
+                    </svg>
+                </span>
+                <DatePicker Value="meetingDate"
+                            ValueChanged="HandleDateChanged"
+                            DisableWeekends="false"
+                            CssClass="meet-input meet-date-trigger"
+                            Placeholder="Click to select a date" />
+            </div>
+        </div>
+
+        <div class="meet-field">
+            <label class="meet-field__label">Invite Attendees</label>
+            <AttendeeSearch CurrentUserId="@CurrentUserId"
+                            Selected="selectedAttendees"
+                            OnAdd="HandleAttendeeAdd"
+                            OnRemove="HandleAttendeeRemove" />
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 18px;">
+            <button class="meet-btn meet-btn--ghost" type="button" @onclick="Reset" disabled="@isCreating">
+                Reset
+            </button>
+            <button class="meet-btn" type="button" @onclick="Submit" disabled="@isCreating">
+                @if (isCreating)
+                {
+                    <span>Creating…</span>
+                }
+                else
+                {
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Create Meeting</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public int CurrentUserId { get; set; }
+    [Parameter] public List<MeetingRoomResponse>? Rooms { get; set; }
+    [Parameter] public EventCallback OnMeetingCreated { get; set; }
+
+    private string? title;
+    private string? description;
+    private DateTime meetingDate = DateTime.Today.AddDays(1);
+    private TimeOnly startTime = new(9, 0);
+    private TimeOnly endTime = new(10, 0);
+    private int selectedRoomId = 0;
+    private List<AttendeeSearch.AttendeePick> selectedAttendees = new();
+    private string? message;
+    private bool success;
+    private bool isCreating;
+
+    private void HandleDateChanged(DateTime date) => meetingDate = date;
+
+    private void HandleAttendeeAdd(AttendeeSearch.AttendeePick pick)
+    {
+        if (selectedAttendees.Any(a => a.UserId == pick.UserId)) return;
+        selectedAttendees.Add(pick);
+    }
+
+    private void HandleAttendeeRemove(int userId)
+    {
+        selectedAttendees.RemoveAll(a => a.UserId == userId);
+    }
+
+    private void Reset()
+    {
+        title = null;
+        description = null;
+        meetingDate = DateTime.Today.AddDays(1);
+        startTime = new TimeOnly(9, 0);
+        endTime = new TimeOnly(10, 0);
+        selectedRoomId = 0;
+        selectedAttendees.Clear();
+        message = null;
+    }
+
+    private async Task Submit()
+    {
+        message = null;
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            message = "Title is required.";
+            success = false;
+            return;
+        }
+        if (selectedRoomId == 0)
+        {
+            message = "Select a meeting room.";
+            success = false;
+            return;
+        }
+        if (selectedAttendees.Count == 0)
+        {
+            message = "Add at least one attendee.";
+            success = false;
+            return;
+        }
+
+        isCreating = true;
+        try
+        {
+            var result = await CreateMeetingHandler.ProcessActiveRequestAsnync(new CreateMeetingRequest
+            {
+                CreatedByUserId = CurrentUserId,
+                MeetingRoomTableId = selectedRoomId,
+                Title = title!,
+                Description = description,
+                MeetingDate = meetingDate,
+                StartTime = startTime.ToTimeSpan(),
+                EndTime = endTime.ToTimeSpan(),
+                AttendeeUserIds = selectedAttendees.Select(a => a.UserId).ToList()
+            });
+
+            if (result.Value?.Success == true)
+            {
+                message = $"Meeting created (ID {result.Value.MeetingId}).";
+                success = true;
+                title = null;
+                description = null;
+                selectedAttendees.Clear();
+                await OnMeetingCreated.InvokeAsync();
+            }
+            else
+            {
+                message = result.Value?.ErrorMessage ?? "Failed to create meeting.";
+                success = false;
+            }
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+}

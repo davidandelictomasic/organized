@@ -11,6 +11,7 @@ namespace Organized.Domain.Persistence.Users
         Task<User?> GetById(int id);
         Task<User?> GetByEmail(string email);
         Task<IEnumerable<User>> GetByIds(IEnumerable<int> ids);
+        Task<IEnumerable<User>> GetAll();
         Task<IEnumerable<User>> SearchByNameOrEmail(string term, int excludeUserId);
     }
 }

@@ -1,0 +1,48 @@
+@using Organized.Application.Meetings
+
+<div class="muser-section">
+    <div class="muser-section__head">
+        <h2 class="muser-section__title">
+            <span class="muser-section__icon muser-section__icon--mute">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <polyline points="12 7 12 12 15 14"></polyline>
+                </svg>
+            </span>
+            Pending Invitations
+        </h2>
+        <span class="muser-section__count"><b>@(Invites?.Count ?? 0)</b> waiting</span>
+    </div>
+
+    @if (Invites == null)
+    {
+        <div class="muser-empty">Loading invitations…</div>
+    }
+    else if (Invites.Count == 0)
+    {
+        <div class="muser-empty">
+            <div class="muser-empty__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 5h16v14H4z"></path>
+                    <polyline points="4 5 12 13 20 5"></polyline>
+                </svg>
+            </div>
+            No pending invitations.
+        </div>
+    }
+    else
+    {
+        <div class="muser-list">
+            @foreach (var i in Invites)
+            {
+                <PendingInviteCard Invite="i" OnAccept="OnAccept" OnDecline="OnDecline" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<PendingMeetingInviteResponse>? Invites { get; set; }
+    [Parameter] public EventCallback<int> OnAccept { get; set; }
+    [Parameter] public EventCallback<int> OnDecline { get; set; }
+}

@@ -1,0 +1,202 @@
+@page "/meetings"
+@layout HomeLayout
+@rendermode InteractiveServer
+@using Organized.Application.Meetings
+@using Organized.Services
+@inject UserStateService UserState
+@inject NavigationManager Navigation
+@inject GetMeetingsCreatedByAdminRequestHandler GetAdminMeetingsHandler
+@inject GetMeetingRoomsRequestHandler GetMeetingRoomsHandler
+@inject GetUserMeetingInvitesRequestHandler GetInvitesHandler
+@inject GetUserUpcomingMeetingsRequestHandler GetUpcomingHandler
+@inject AcceptMeetingInviteRequestHandler AcceptInviteHandler
+@inject DeclineMeetingInviteRequestHandler DeclineInviteHandler
+@inject CancelMeetingRequestHandler CancelMeetingHandler
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Meetings - Organized</PageTitle>
+
+<div class="meetings-page">
+    @if (!UserState.IsLoggedIn)
+    {
+        <div class="meet-loading">Loading…</div>
+    }
+    else if (UserState.IsAdmin)
+    {
+        <MeetingsHeader Subtitle="@AdminSubtitle" />
+
+        <div class="meetings-grid">
+            <CreateMeetingPanel CurrentUserId="UserState.UserId!.Value"
+                                Rooms="rooms"
+                                OnMeetingCreated="LoadAdmin" />
+
+            <div class="meetings-stack">
+                <AdminMeetingsList Meetings="adminMeetings" Rooms="rooms" OnCancel="CancelAdminMeeting" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="meet-user-view">
+            <div class="muser-head">
+                <h1 class="muser-head__title">Meetings</h1>
+            </div>
+
+            @if (!string.IsNullOrEmpty(userMessage))
+            {
+                <div class="muser-toast @(userSuccess ? "muser-toast--success" : "muser-toast--error")" role="status">
+                    <span class="muser-toast__icon">
+                        @if (userSuccess)
+                        {
+                            <CheckIcon CssClass="muser-toast__icon-svg" />
+                        }
+                        else
+                        {
+                            <XMarkIcon CssClass="muser-toast__icon-svg" />
+                        }
+                    </span>
+                    @userMessage
+                    <button class="muser-toast__close" type="button" @onclick="DismissToast" aria-label="Dismiss">
+                        <XMarkIcon CssClass="muser-toast__close-svg" />
+                    </button>
+                </div>
+            }
+
+            <PendingInvitesList Invites="invites"
+                                OnAccept="Accept"
+                                OnDecline="Decline" />
+
+            <UpcomingMeetingsList Upcoming="upcoming" />
+        </div>
+    }
+</div>
+
+@code {
+    private List<MeetingRoomResponse>? rooms;
+    private List<AdminMeetingSummaryResponse>? adminMeetings;
+
+    private List<PendingMeetingInviteResponse>? invites;
+    private List<UpcomingMeetingResponse>? upcoming;
+    private string? userMessage;
+    private bool userSuccess;
+
+    private string AdminSubtitle =>
+        adminMeetings == null
+            ? "Loading your meetings…"
+            : $"<b>{adminMeetings.Count}</b> created · <b>{adminMeetings.Count(m => m.Status == Domain.Enums.MeetingStatus.Scheduled && m.MeetingDate.Date >= DateTime.UtcNow.Date)}</b> upcoming";
+
+    private string UserSubtitle =>
+        invites == null || upcoming == null
+            ? "Loading your schedule…"
+            : $"<b>{invites.Count}</b> pending · <b>{upcoming.Count}</b> upcoming";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserState.IsLoggedIn)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}");
+            return;
+        }
+
+        if (UserState.IsAdmin)
+        {
+            await LoadAdmin();
+        }
+        else
+        {
+            await LoadUser();
+        }
+    }
+
+    private async Task LoadAdmin()
+    {
+        var roomsResult = await GetMeetingRoomsHandler.ProcessActiveRequestAsnync(new GetMeetingRoomsRequest());
+        rooms = roomsResult.Value ?? new List<MeetingRoomResponse>();
+
+        var meetingsResult = await GetAdminMeetingsHandler.ProcessActiveRequestAsnync(new GetMeetingsCreatedByAdminRequest
+        {
+            AdminUserId = UserState.UserId!.Value
+        });
+        adminMeetings = meetingsResult.Value ?? new List<AdminMeetingSummaryResponse>();
+    }
+
+    private async Task LoadUser()
+    {
+        var invitesResult = await GetInvitesHandler.ProcessActiveRequestAsnync(new GetUserMeetingInvitesRequest
+        {
+            UserId = UserState.UserId!.Value
+        });
+        invites = invitesResult.Value ?? new List<PendingMeetingInviteResponse>();
+
+        var upcomingResult = await GetUpcomingHandler.ProcessActiveRequestAsnync(new GetUserUpcomingMeetingsRequest
+        {
+            UserId = UserState.UserId!.Value
+        });
+        upcoming = upcomingResult.Value ?? new List<UpcomingMeetingResponse>();
+    }
+
+    private async Task Accept(int inviteId)
+    {
+        var result = await AcceptInviteHandler.ProcessActiveRequestAsnync(new AcceptMeetingInviteRequest
+        {
+            UserId = UserState.UserId!.Value,
+            InviteId = inviteId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            userMessage = "Invitation accepted.";
+            userSuccess = true;
+            await LoadUser();
+        }
+        else
+        {
+            userMessage = result.Value?.ErrorMessage ?? "Failed to accept.";
+            userSuccess = false;
+        }
+    }
+
+    private void DismissToast()
+    {
+        userMessage = null;
+    }
+
+    private async Task CancelAdminMeeting(int meetingId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+            "Cancel this meeting? All attendees will be notified and their invitations cancelled.");
+        if (!confirmed) return;
+
+        var result = await CancelMeetingHandler.ProcessActiveRequestAsnync(new CancelMeetingRequest
+        {
+            UserId = UserState.UserId!.Value,
+            MeetingId = meetingId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            await LoadAdmin();
+        }
+    }
+
+    private async Task Decline(int inviteId)
+    {
+        var result = await DeclineInviteHandler.ProcessActiveRequestAsnync(new DeclineMeetingInviteRequest
+        {
+            UserId = UserState.UserId!.Value,
+            InviteId = inviteId
+        });
+
+        if (result.Value?.Success == true)
+        {
+            userMessage = "Invitation declined.";
+            userSuccess = true;
+            await LoadUser();
+        }
+        else
+        {
+            userMessage = result.Value?.ErrorMessage ?? "Failed to decline.";
+            userSuccess = false;
+        }
+    }
+}

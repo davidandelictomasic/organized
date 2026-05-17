@@ -1,5 +1,6 @@
 ﻿using Organized.Domain.Persistence.Achievements;
 using Organized.Domain.Persistence.Friends;
+using Organized.Domain.Persistence.Meetings;
 using Organized.Domain.Persistence.Reservations;
 using Organized.Domain.Persistence.Tables;
 using Organized.Domain.Persistence.Users;
@@ -24,5 +25,8 @@ namespace Organized.Domain.Persistence.Common
 
         IFriendshipRepository FriendshipRepository { get; }
         IFriendRequestRepository FriendRequestRepository { get; }
+
+        IMeetingRepository MeetingRepository { get; }
+        IMeetingInviteRepository MeetingInviteRepository { get; }
     }
 }
